@@ -1,0 +1,207 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="author" content="vincentyao" />
+    <title>Deeplearning_for_computer_vision</title>
+
+    <link rel="stylesheet" href="/assets/themes/dinky/css/styles.css">
+    <link rel="stylesheet" href="/assets/themes/dinky/css/pygment_trac.css">
+    <script src="/assets/themes/dinky/js/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header"><a href="/">100的技术博客</a></h1>
+        <p class="header">广告、算法与金融</p>
+        <ul>
+          
+          
+          
+
+
+  
+    
+      
+      	
+      	<li><a href="/archive.html">Archive</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories.html">Categories</a></li>
+      	
+      
+    
+  
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/pages.html">Pages</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags.html">Tags</a></li>
+      	
+      
+    
+  
+
+
+
+        </ul>
+        
+        
+        <div class="misc vcard">
+          <h4>about</h4>
+          <ul>
+            
+            <li class="contact"><address><span class="author fn n">vincentyao</span> - <span class="fn email">zerobased@foxmail.com</span></address></li>
+            
+            
+            <li class="github"><a href="http://github.com/zzbased/" rel="me">github.com/zzbased</a></li>
+            
+            
+            <li class="twitter"><a href="http://weibo.com/zerobased/" rel="me">weibo.com/zerobased</a></li>
+            
+            
+            <li class="twitter"><a href="http://twitter.com/callyling/" rel="me">twitter.com/callyling</a></li>
+            
+            
+            
+            
+            
+          </ul>
+        </div><!-- misc -->
+        
+      </header>
+
+      <section>
+        
+<section>
+  <h1>Deeplearning_for_computer_vision</h1>
+
+  
+<h2 id="deep-learning-for-computer-vision-slide-learning">deep learning for computer vision, slide learning.</h2>
+
+<p><strong>deep learning for computer vision,
+nips 2013 tutorial,
+rob fergus</strong>
+<a href="http://cs.nyu.edu/~fergus/presentations/nips2013_final.pdf">slidelink</a></p>
+
+<ul>
+  <li>
+    <p>existing recognition approach. page4. **need **
+features are hand-designed.
+trainable classifier is often generic.</p>
+  </li>
+  <li>
+    <p>supervised or unsupervised， deep or shallow。page10. <strong>need</strong></p>
+  </li>
+  <li>
+    <p>recap of convnet. page13. <strong>need</strong>
+input image -&gt;  convolution -&gt; non-linearity -&gt; pooling -&gt; feature maps</p>
+  </li>
+  <li>
+    <p>cnn. components of each layer. compare to sift descriptor. page 21~22. <strong>need</strong></p>
+  </li>
+  <li>
+    <p>filtering. tied filter weights. page24.</p>
+  </li>
+  <li>
+    <p>non-linearity. tanh vs sigmoid vs rectified linear. page26.</p>
+  </li>
+  <li>
+    <p>pooling. max or sum. larger receptive fields. page27~29</p>
+  </li>
+  <li>
+    <p>architecture of krizhevsky. param nums? page35</p>
+  </li>
+  <li>
+    <p>直接拿某些层的features送进linear svm of soft-max. page40.</p>
+  </li>
+  <li>
+    <p>visualizing convnets. page45~46
+using deconvolutional networks.
+和卷机神经网络某些操作类似，但是是相反的。
+feature maps -&gt; unpooling -&gt; non-linearity -&gt; convolution -&gt; input image.</p>
+  </li>
+  <li>
+    <p>details of operation. page48.  <strong>need</strong></p>
+  </li>
+  <li>
+    <p>imagenet 2013 results. page 69. <strong>need</strong></p>
+  </li>
+  <li>
+    <p>improving generalization. page76. <strong>need</strong>
+data augmentation.
+weight decay.
+inject noise into network. dropout, dropconnect, stochastic pooling.</p>
+  </li>
+  <li>
+    <p>如何调试cnn。page84~85. <strong>need</strong>
+训练diverges，减小learning rate，numerical gradient checking。
+parameters collapse.
+network is underperforming.</p>
+  </li>
+  <li>
+    <p>detection with convnets. page89.</p>
+  </li>
+  <li>
+    <p>using features on other datasets. page106.</p>
+  </li>
+</ul>
+
+
+
+  
+</section>
+
+
+      </section>
+
+      <footer>
+        <p><small>Hosted on <a href="http://pages.github.com/">GitHub Pages</a> using the <a href="https://github.com/sodabrew/theme-dinky">Dinky theme</a> for <a href="http://jekyllbootstrap.com/">Jekyll Bootstrap</a></small></p>
+      </footer>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+  </body>
+</html>
+

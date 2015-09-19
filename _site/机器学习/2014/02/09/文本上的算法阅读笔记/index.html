@@ -1,0 +1,341 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="author" content="vincentyao" />
+    <title>文本上的算法阅读笔记</title>
+
+    <link rel="stylesheet" href="/assets/themes/dinky/css/styles.css">
+    <link rel="stylesheet" href="/assets/themes/dinky/css/pygment_trac.css">
+    <script src="/assets/themes/dinky/js/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header"><a href="/">100的技术博客</a></h1>
+        <p class="header">广告、算法与金融</p>
+        <ul>
+          
+          
+          
+
+
+  
+    
+      
+      	
+      	<li><a href="/archive.html">Archive</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories.html">Categories</a></li>
+      	
+      
+    
+  
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/pages.html">Pages</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags.html">Tags</a></li>
+      	
+      
+    
+  
+
+
+
+        </ul>
+        
+        
+        <div class="misc vcard">
+          <h4>about</h4>
+          <ul>
+            
+            <li class="contact"><address><span class="author fn n">vincentyao</span> - <span class="fn email">zerobased@foxmail.com</span></address></li>
+            
+            
+            <li class="github"><a href="http://github.com/zzbased/" rel="me">github.com/zzbased</a></li>
+            
+            
+            <li class="twitter"><a href="http://weibo.com/zerobased/" rel="me">weibo.com/zerobased</a></li>
+            
+            
+            <li class="twitter"><a href="http://twitter.com/callyling/" rel="me">twitter.com/callyling</a></li>
+            
+            
+            
+            
+            
+          </ul>
+        </div><!-- misc -->
+        
+      </header>
+
+      <section>
+        
+<section>
+  <h1>文本上的算法阅读笔记</h1>
+
+  
+<h2 id="section">文本上的算法 阅读笔记</h2>
+
+<p>看到一篇文章，<a href="http://hi.baidu.com/yanxionglu/item/2166a8df35d6d2392b35c70e">文本上的算法</a>，<a href="https://github.com/yanxionglu/text_pdf">github地址</a> 浏览了一遍，文章虽说并无新的思想，但胜在总结全面，读来收获仍有很多，把一些细节点重新回顾了一遍。下面把一些阅读笔记记录下来。</p>
+
+<h3 id="section-1">概率分布</h3>
+<p><a href="http://zh.wikipedia.org/zh-cn/泊松分佈">Poisson distribution</a>
+泊松分布适合于描述单位时间内随机事件发生的次数的概率分布。如某一服务设施在一定时间内受到的服务请求的次数，电话交换机接到呼叫的次数、汽车站台的候客人数、机器出现的故障数、自然灾害发生的次数、DNA序列的变异数、放射性原子核的衰变数等等。</p>
+
+<p><a href="http://zh.wikipedia.org/wiki/伽玛分布">gamma distribution</a>  可以参考rick的这篇文章<a href="http://cos.name/2013/01/lda-math-gamma-function/">LDA-math-神奇的Gamma函数</a></p>
+
+<p><a href="http://zh.wikipedia.org/wiki/指数分布">Exponential distribution</a> 指数分布可以用来表示独立随机事件发生的时间间隔，比如旅客进机场的时间间隔、中文维基百科新条目出现的时间间隔等等。</p>
+
+<p><a href="http://zh.wikipedia.org/wiki/二项分布">binomial distribution</a></p>
+
+<h3 id="section-2">信息论</h3>
+
+<p>信息熵表示的是不确定性的度量。信息熵越大,不确定性越大。</p>
+
+<blockquote>
+  <p>联合熵；条件熵；互信息：衡量两个随机变量(事件)的相关程度,当X和Y完全相关时,它们的互信息就是1；相对熵：衡量相同事件空间里两个概率分布(函数)的差异程度。</p>
+</blockquote>
+
+<h3 id="section-3">最优化基础</h3>
+<ul>
+  <li>
+    <p>风险：
+期望风险
+经验风险
+结构风险
+这三个风险好好理解一下。期望风险是针对真实模型的，一般没法计算。经验风险是针对样本数据的，一般用经验风险最小化来估计期望风险。为了尽可能避免过拟合现象的出现,就要对模型的复杂度进行惩罚,这就是正则化, 一般正则化,就是对模型的参数进行惩罚，此时是结构风险。</p>
+  </li>
+  <li>
+    <p>偏差和方差的区别
+文中的理解我觉得不够透彻，这篇文章我认为讲得更好。
+<a href="http://blog.sina.com.cn/s/blog_593af2a7010181pr.html">bias和variance</a>
+总之结论就是：一个模型越复杂,偏差就越小,方差就越大;相反,一个模型越简单,偏差就越大,方差就越小。最好的模型就是偏差和方差之和最优的模型。</p>
+  </li>
+  <li>
+    <p>估计方法：
+最大似然估计
+最大后验估计
+最小二乘估计
+矩估计。</p>
+  </li>
+</ul>
+
+<blockquote>
+  <p>最大后验估计相比最大似然估计,只是多了一项先验概率,它正好体现了贝叶斯认为参数也是随机变量的观点,在实际运算中通常通过超参数给出先验分布。</p>
+</blockquote>
+
+<ul>
+  <li>
+    <p>最大似然估计其实是经验风险最小化的一个例子,而最大后验估计是结构风险最小化的一个例子。
+从广义线性模型看，只有因变量正态的时候极大似然的结果与最小二乘相同。</p>
+  </li>
+  <li>
+    <p>求解方法：
+梯度下降法 随机梯度下降法 共轭梯度法 牛顿法 拟牛顿法 坐标下降法</p>
+  </li>
+  <li>
+    <p>对偶问题，kkt条件</p>
+  </li>
+</ul>
+
+<h3 id="section-4">机器学习</h3>
+
+<p>监督学习通常分为两个模型:生成模型和判别模型。</p>
+
+<p>判别模型(它的概率图是无向图)是求解条件概率的p(y|x),然后直接进行预测,比如:逻辑回归,SVM,神经网络,CRF都是判别模型,所以判别模型求解的是条件概率。</p>
+
+<p>生成模型(它的概率图是有向图)是首先求解两个概率p(x|y)和 p(y),然后根据贝叶斯法则求出后验概率p(y|x),再进行预测,比如: 朴素贝叶斯,HMM,贝叶斯网络,LDA 都是生成模型,又因为p(x,y) = p(x|y)∗ p(y),所以生成模型求解的是联合概率。</p>
+
+<h3 id="section-5">逻辑回归</h3>
+<p>关于逻辑回归，请参考这篇文章<a href="https://github.com/zzbased/zzbased.github.com/blob/master/_posts/doc/LR逻辑回归-从入门到精通.pdf">逻辑回归，从入门到精通</a></p>
+
+<h3 id="section-6">最大熵</h3>
+<p>最大熵模型：目标是要使条件熵最大；约束条件是”模型期望=样本期望”。
+CRF 利用了上下文信息,而且最后的条件概率也是全局最优(无标记偏置问题)。</p>
+
+<p><a href="http://www.inference.phy.cam.ac.uk/hmw26/papers/crf_intro.pdf">Conditional Random Fields</a>
+这里有专门的<a href="http://zzbased.github.io/2014/03/14/hmm_and_crf.html">本站文章</a>来介绍。</p>
+
+<h3 id="section-7">主题模型</h3>
+<p><a href="http://zzbased.github.io/2015/02/01/semantic_analysis_method.html">本站文章</a></p>
+
+<h3 id="section-8">深度学习</h3>
+<p><a href="http://licstar.net/archives/328">deep learning in nlp</a></p>
+
+<p><a href="https://code.google.com/p/word2vec/">word2vec</a></p>
+
+<p>目前词向量一般也有两种用法:(1)直接把词向量作为神经网络的输入完成一些 NLP 任务,例如,Natural Language Processing (Almost) from Scratch 这篇文章的工作;(2)把词向量当做一个特征,加入到现有的NLP任务中。</p>
+
+<p>有<a href="http://zzbased.github.io/2015/02/01/semantic_analysis_method.html">本站文章</a>做详细介绍。</p>
+
+<h3 id="section-9">分布式计算</h3>
+<p>NoSQL 数据库,它主要包括:(1)key-value 数据库,代表有:Redis,LevelDB,Dynamo 等;(2)列式数据库,代 表有:BigTable,Hypertable,Cassandra 等;(3)文档数据库,代表有: CouchDB,MongoDB 等;(4)图形数据库,代表有:OrientDB,GraphDB 等。</p>
+
+<p>分布式计算模型大概有这几种:(1)多线程,最基本的方法;(2) Graphics Processing Units,利用图形处理器的高度并行结构来提高速度; (3)Message Passing Interface,一种消息传递编程模型;(4)MapReduce。</p>
+
+<h3 id="section-10">未完待续</h3>
+<ul>
+  <li>
+    <p>DT/Boosting/GBDT
+<a href="http://zzbased.github.io/2015/01/03/decision_tree.html">本站文章</a></p>
+  </li>
+  <li>
+    <p>SVM</p>
+  </li>
+</ul>
+
+<p><img src="https://raw.githubusercontent.com/zzbased/zzbased.github.com/master/_posts/images/svm1.png" alt="Image" /></p>
+
+<p><img src="https://raw.githubusercontent.com/zzbased/zzbased.github.com/master/_posts/images/svm2.png" alt="Image" /></p>
+
+<ul>
+  <li>
+    <p>PageRank：<a href="http://www.kreny.com/pagerank_cn.htm">Google的秘密- PageRank彻底解说 中文版</a></p>
+  </li>
+  <li>
+    <p>相似度计算：bool模型，tf-idf模型(增加了词权重特征)，BM25 模型(增加了长度特征)，Proximity 模型(增加了位置特征)，语义特征模型(增加了语义特征)
+，句法特征模型(增加了句法特征)</p>
+  </li>
+</ul>
+
+<h4 id="section-11">搜索引擎是怎么回事？</h4>
+
+<p><img src="https://raw.githubusercontent.com/zzbased/zzbased.github.com/master/_posts/images/search_engine1.png" alt="search_engine1" /></p>
+
+<p>P(𝐷i)：第i个网页的重要程度，譬如PageRank</p>
+
+<p><img src="https://raw.githubusercontent.com/zzbased/zzbased.github.com/master/_posts/images/search_engine2.png" alt="search_engine2" /></p>
+
+<p>索引生成：
+索引库分库分为两个维度:横向和纵向。</p>
+
+<ul>
+  <li>纵向就是指先在高质量库中检索,如果满足需求就返回,否则再去低质量库中检索;</li>
+  <li>横向就是去检索高质量库或者低质量库的时候,会去同时检索每台机器的小库,然后汇总归并。</li>
+  <li>一个索引结构其实可以简单看作就是 key-list 结构。索引归并主要有两种方法：Term-At-A-Time和Document-At-A-Time。</li>
+  <li>DAAT每个文档都遍历，性能不高。此时可利用skip list。<a href="">Skip Lists: a Probabilistic Alternative to Balanced Trees</a>。跳表的优化只对 AND 查询有用，对 OR 查询不起作用。</li>
+  <li>对于搜索一般有三个常用的查询表达式:AND、OR 和 NOT。在 DAAT 查询处理方式中,有两个经典的动态索引剪枝算法:MaxScore 和 Weak-AND(WAND,是 AND 查询和 OR 查询的扩展)。</li>
+  <li>较简单的比如会构建四个不同的数据结构,分别是词典库(存放term及其在索引库的位 置偏移,一般常驻内存),位置库(存放 term 在文档中的位置信息, 根据数据规模决定存放磁盘还是内存),属性库(存放 term 的其他属 性,词频,权重等等,也是根据数据规模决定存放磁盘还是内存),跳表库(存放跳表指针,一般常驻内存);</li>
+  <li><strong>注意：以后有时间总结一下广点通的索引模型</strong></li>
+</ul>
+
+<p>query分析：</p>
+
+<ul>
+  <li>term级别分析：分词/专名识别，term重要性，term紧密度</li>
+  <li>query级别分析：query需求识别，时效性判断，地域信息</li>
+  <li>query变换：同义改写，纠错改写，关联扩展</li>
+</ul>
+
+<p>rerank：</p>
+
+<ul>
+  <li>页面质量调权，query需求调权，时效性调权，多样性调权，点击调权。</li>
+  <li><a href="http://www2009.org/proceedings/pdf/p1.pdf">A Dynamic Bayesian Network Click Model for Web Search Ranking</a></li>
+</ul>
+
+<p>learning to rank：</p>
+
+<ul>
+  <li>Pointwise,Pairwise 和 Listwise。</li>
+  <li>搜索引擎并不是直接用 Learning to Rank 排序,而是用它来计算一些高级特征供上层排 序使用。</li>
+</ul>
+
+<p>query log 和点击数据 算是搜索引擎特有的优质资源</p>
+
+<h4 id="section-12">搜索广告</h4>
+<p>这里我应该是最熟悉的，之后抽空把这块内容好好总结一下。主要想把整个架构理清楚，”投放-数据库-审核-发布-query分析-检索-粗选-pctr-精选-展示-日志-反作弊-计费-报表”</p>
+
+<h4 id="section-13">推荐</h4>
+<p><a href="http://zzbased.github.io/2015/01/03/recommendation_algorithms.html">本站文章</a></p>
+
+<h3 id="section-14">补充</h3>
+<p>除了文章中谈到的，根据我个人的积累，对于文本上的算法，有如下补充：</p>
+
+<p>文本上基本的算法以及功能点，我做过的还有：</p>
+
+<ul>
+  <li>hmm (pos tagging)</li>
+  <li>maxent (classification) <a href="http://www.logos.ic.i.u-tokyo.ac.jp/~tsuruoka/maxent/">maxent</a> 我用到的最大熵库。</li>
+  <li>query expand：做过三种方法：基于session，相关搜索，query互点击</li>
+  <li>query - bidword mapping：主要策略有，高频query词表，高频query索引，二级映射词表，bidword聚类，combination，query-ad直接match，高级短语匹配。</li>
+  <li>query成分分析：</li>
+  <li>term重要性分析：训练数据自动提取，LR模型训练</li>
+  <li>同义词挖掘 – 基于共现</li>
+  <li>
+    <p>实体词/新词挖掘 <a href="http://www.matrix67.com/blog/archives/5044">基于熵的办法</a>，基于模版的方法，基于crf的方法。</p>
+
+    <p>这里有更多的思路补充:1. 词内高内聚，词间低耦合 2. 基于构件 3. 基于邻居 4. 天然词标注抽取，比如搜索日志，双引号，书名号，HTML 超链接等 5. 分词器的切碎字或自动新词识别（一般是基于字的标注） 6. 加入测试语料频率特征 7. 迭代式自增词典分词法 8. 无词典分词如最小描述长度 @chico2011</p>
+  </li>
+  <li>机器翻译 <a href="https://code.google.com/p/giza-pp/">giza-pp</a> <a href="http://www.statmt.org/moses/">moses</a>
+<a href="http://tapd.oa.com/v3/cocktail/wikis/view/%E6%9C%BA%E5%99%A8%E7%BF%BB%E8%AF%91%E5%85%B3%E9%94%AE%E8%AF%8D%E6%8F%90%E5%8F%96%E7%9B%B8%E5%85%B3">guide</a> 把它记下来。</li>
+  <li>基于mpi的nmf,plsa。</li>
+  <li>keyword extraction.  keyword recommender. 自动摘要</li>
+  <li>短串语义相关性计算。</li>
+  <li>并行版的collaborative filter，基于minhash，lsh和hadopp。基于cf做query扩展。</li>
+  <li>基于wand的语义索引。</li>
+</ul>
+
+<p>对于文本上的应用，我接触到的主要在做搜索和广告。譬如微博广告，涉及到keyword提取。又譬如广告的相关性，广告的扩展匹配和触发。这里面涉及的门门道道还挺多的。以后抽空详细总结一下。现在先到此为止。</p>
+
+
+
+  
+</section>
+
+
+      </section>
+
+      <footer>
+        <p><small>Hosted on <a href="http://pages.github.com/">GitHub Pages</a> using the <a href="https://github.com/sodabrew/theme-dinky">Dinky theme</a> for <a href="http://jekyllbootstrap.com/">Jekyll Bootstrap</a></small></p>
+      </footer>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+  </body>
+</html>
+

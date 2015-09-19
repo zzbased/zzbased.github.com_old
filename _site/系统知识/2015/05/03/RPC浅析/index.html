@@ -1,0 +1,871 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="author" content="vincentyao" />
+    <title>Rpc浅析</title>
+
+    <link rel="stylesheet" href="/assets/themes/dinky/css/styles.css">
+    <link rel="stylesheet" href="/assets/themes/dinky/css/pygment_trac.css">
+    <script src="/assets/themes/dinky/js/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header"><a href="/">100的技术博客</a></h1>
+        <p class="header">广告、算法与金融</p>
+        <ul>
+          
+          
+          
+
+
+  
+    
+      
+      	
+      	<li><a href="/archive.html">Archive</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories.html">Categories</a></li>
+      	
+      
+    
+  
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/pages.html">Pages</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags.html">Tags</a></li>
+      	
+      
+    
+  
+
+
+
+        </ul>
+        
+        
+        <div class="misc vcard">
+          <h4>about</h4>
+          <ul>
+            
+            <li class="contact"><address><span class="author fn n">vincentyao</span> - <span class="fn email">zerobased@foxmail.com</span></address></li>
+            
+            
+            <li class="github"><a href="http://github.com/zzbased/" rel="me">github.com/zzbased</a></li>
+            
+            
+            <li class="twitter"><a href="http://weibo.com/zerobased/" rel="me">weibo.com/zerobased</a></li>
+            
+            
+            <li class="twitter"><a href="http://twitter.com/callyling/" rel="me">twitter.com/callyling</a></li>
+            
+            
+            
+            
+            
+          </ul>
+        </div><!-- misc -->
+        
+      </header>
+
+      <section>
+        
+<section>
+  <h1>Rpc浅析</h1>
+
+  
+<h1 id="rpc">RPC浅析</h1>
+
+<p>根据该文整理的ppt，请参考<a href="https://github.com/zzbased/zzbased.github.com/blob/master/_posts/doc/RPC浅析.pdf">rpc浅析.pdf</a></p>
+
+<h2 id="protobuf">Protobuf简介</h2>
+
+<h3 id="section">简单介绍</h3>
+<p><a href="https://github.com/google/protobuf">protobuf</a></p>
+
+<p>优点：</p>
+
+<ul>
+  <li>用来序列化结构化数据，类似于xml，但是smaller, faster, and simpler，适合网络传输</li>
+  <li>支持跨平台多语言(e.g. Python, Java, Go, C++, Ruby, JavaNano)</li>
+  <li>消息格式升级，有较好的兼容性(想想以前用struct定义网络传输协议,解除version的痛楚)</li>
+</ul>
+
+<p>缺点：</p>
+
+<ul>
+  <li>可读性差(not human-readable or human-editable)</li>
+  <li>不具有自描述性(self-describing)</li>
+</ul>
+
+<h3 id="reflection">Reflection</h3>
+
+<p>Reflection: 常用于pb与xml,json等其他格式的转换。</p>
+
+<p><img src="https://raw.githubusercontent.com/zzbased/zzbased.github.com/master/_posts/images/reflection_protobuf.png" alt="" /></p>
+
+<p>更多请参考：
+<a href="http://blog.csdn.net/solstice/article/details/6300108">一种自动反射消息类型的 Google Protobuf 网络传输方案</a></p>
+
+<h3 id="section-1">自描述消息</h3>
+
+<p>生产者：产生消息，填充内容，并序列化保存</p>
+
+<p>消费者：读取数据，反序列化得到消息，使用消息</p>
+
+<p>目的：解除这种耦合，让消费者能动态的适应消息格式的变换。</p>
+
+<p>生产者把定义消息格式的.proto文件和消息作为一个完整的消息序列化保存，完整保存的消息我称之为Wrapper message，原来的消息称之为payload message。</p>
+
+<p>消费者把wrapper message反序列化，先得到payload message的消息类型，然后根据类型信息得到payload message，最后通过反射机制来使用该消息。</p>
+
+<pre><code>message SelfDescribingMessage {
+	// Set of .proto files which define the type.
+	required FileDescriptorSet proto_files = 1;
+
+	// Name of the message type.  Must be defined by one of the files in
+	// proto_files.
+	required string type_name = 2;
+
+	// The message data.
+	required bytes message_data = 3;
+}
+</code></pre>
+
+<p><strong>Self-describing Messages 生产者</strong></p>
+
+<ul>
+  <li>使用 protoc生成代码时加上参数–descriptor_set_out，输出类型信息(即SelfDescribingMessage的第一个字段内容)到一个文件，这里假设文件名为desc.set，protoc –cpp_out=. –descriptor_set_out=desc.set addressbook.proto</li>
+  <li>payload message使用方式不需要修改tutorial::AddressBook address_book;PromptForAddress(address_book.add_person());</li>
+  <li>在保存时使用文件desc.set内容填充SelfDescribingMessage的第一个字段，使用AddressBookAddressBook的full name填充SelfDescribingMessage的第二个字段，AddressBook序列化后的数据填充第三个字段。最后序列化SelfDescribingMessage保存到文件中。</li>
+</ul>
+
+<p><strong>Self-describing Messages 消费者</strong></p>
+
+<p>消费者编译时需要知道SelfDescribingMessage，不需要知道AddressBook，运行时可以正常操作AddressBook消息。</p>
+
+<p><img src="https://raw.githubusercontent.com/zzbased/zzbased.github.com/master/_posts/images/self-describing_message_consume.png" alt="" /></p>
+
+<h3 id="section-2">动态自描述消息</h3>
+<p>@TODO</p>
+
+<h3 id="section-3">工程实践</h3>
+
+<ul>
+  <li>一般对日志数据只加不删不改, 所以其字段设计要极慎重。</li>
+  <li>千万不要随便修改tag number。</li>
+  <li>不要随便添加或者删除required field。</li>
+  <li>Clear并不会清除message memory（clear操作适合于清理那些数据量变化不大的数据，对于大小变化较大的数据是不适合的，需要定期（或每次）进行delete操作。建议swap或者delete）</li>
+  <li>repeated message域，size不要太大。</li>
+  <li>如果一个数据太大，不要使用protobuf。</li>
+</ul>
+
+<h3 id="section-4">参考资料</h3>
+<ul>
+  <li><a href="https://github.com/google/protobuf">Protobuf</a></li>
+  <li><a href="http://www.searchtb.com/2012/09/protocol-buffers.html">玩转Protobuf</a></li>
+  <li><a href="https://developers.google.com/protocol-buffers/docs/techniques?hl=zh-CN#self-description">Self-describing Messages</a></li>
+  <li>Protobuf memory内存的使用。 <a href="http://qa.baidu.com/blog/?p=1179">Protobuf使用不当导致的程序内存上涨问题</a>
+protobuf的clear操作适合于清理那些数据量变化不大的数据，对于大小变化较大的数据是不适合的，需要定期（或每次）进行delete操作。建议swap或者delete。</li>
+  <li><a href="http://blog.chinaunix.net/uid-26922071-id-3723751.html">protobuf中会严重影响时间和空间损耗的地方 </a>
+repeated的性能问题。对于普通数据类型，在2^n+1时重新分配内存空间，而对于message数据，在2^n+1是分配对象地址空间，但每次都是new一个对象，这样就很损耗性能了。</li>
+</ul>
+
+<h2 id="rpc-1">RPC</h2>
+
+<h3 id="rpc-2">业界的RPC</h3>
+
+<p>基于protobuf的rpc最简单实现 两个优点：简化client-server交互，就像在调用一个本地方法；通过Protobuf实现多种编程语言之间的交互。
+get all the advantages of working with protocol buffers, including efficient serialization, a simple IDL, and easy interface updating.</p>
+
+<ul>
+  <li><a href="http://www.codedump.info/?p=169">使用google protobuf RPC实现echo service</a></li>
+  <li><a href="http://codemacro.com/2014/08/31/protobuf-rpc/">基于protobuf的RPC实现</a></li>
+  <li><a href="http://jeoygin.org/2011/09/rpc-framework-protocol-buffers.html">RPC框架系列——Protocol Buffers</a></li>
+  <li><a href="http://djt.qq.com/article/view/327">Poppy</a></li>
+</ul>
+
+<h3 id="gdt-rpc">GDT RPC代码解析</h3>
+
+<h4 id="section-5">公共代码</h4>
+
+<p><strong>echo_service</strong></p>
+
+<p>echo_service.proto:</p>
+
+<pre><code>service EchoService {
+	option (gdt.qzone_protocol_version) = 1;
+	rpc Echo(EchoRequest) returns (EchoResponse) {
+		option (gdt.qzone_protocol_cmd) = 10;
+	}
+	rpc FormTest(FormTestMessage) returns(FormTestMessage);
+}
+</code></pre>
+
+<p>protoc编译后：</p>
+
+<pre><code>class EchoService : public ::google::protobuf::Service {
+	protected:
+	// This class should be treated as an abstract interface.
+	inline EchoService() {};
+	public:
+	virtual ~EchoService();
+
+	typedef EchoService_Stub Stub;
+
+	static const ::google::protobuf::ServiceDescriptor* descriptor();
+	// 下面两个是虚函数,需要在子类实现
+	virtual void Echo(::google::protobuf::RpcController* controller,
+						const ::gdt::rpc_examples::EchoRequest* request,
+						::gdt::rpc_examples::EchoResponse* response,
+						::google::protobuf::Closure* done);
+	virtual void FormTest(::google::protobuf::RpcController* controller,
+						const ::gdt::rpc_examples::FormTestMessage* request,
+						::gdt::rpc_examples::FormTestMessage* response,
+						::google::protobuf::Closure* done);
+
+	// implements Service ----------------------------------------------
+
+	const ::google::protobuf::ServiceDescriptor* GetDescriptor();
+	void CallMethod(const ::google::protobuf::MethodDescriptor* method,
+					::google::protobuf::RpcController* controller,
+					const ::google::protobuf::Message* request,
+					::google::protobuf::Message* response,
+					::google::protobuf::Closure* done);
+	const ::google::protobuf::Message&amp; GetRequestPrototype(
+		const ::google::protobuf::MethodDescriptor* method) const;
+	const ::google::protobuf::Message&amp; GetResponsePrototype(
+		const ::google::protobuf::MethodDescriptor* method) const;
+
+	private:
+	GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(EchoService);
+};
+
+class EchoService_Stub : public EchoService {
+	public:
+	EchoService_Stub(::google::protobuf::RpcChannel* channel);
+	EchoService_Stub(::google::protobuf::RpcChannel* channel,
+					::google::protobuf::Service::ChannelOwnership ownership);
+	~EchoService_Stub();
+
+	inline ::google::protobuf::RpcChannel* channel() { return channel_; }
+
+	// implements EchoService ------------------------------------------
+
+	void Echo(::google::protobuf::RpcController* controller,
+						const ::gdt::rpc_examples::EchoRequest* request,
+						::gdt::rpc_examples::EchoResponse* response,
+						::google::protobuf::Closure* done);
+	void FormTest(::google::protobuf::RpcController* controller,
+						const ::gdt::rpc_examples::FormTestMessage* request,
+						::gdt::rpc_examples::FormTestMessage* response,
+						::google::protobuf::Closure* done);
+	private:
+	::google::protobuf::RpcChannel* channel_;
+	bool owns_channel_;
+	GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(EchoService_Stub);
+};
+
+// 客户端实际调用的是RpcChannel的CallMethod
+void EchoService_Stub::Echo(::google::protobuf::RpcController* controller,
+							const ::gdt::rpc_examples::EchoRequest* request,
+							::gdt::rpc_examples::EchoResponse* response,
+							::google::protobuf::Closure* done) {
+	channel_-&gt;CallMethod(descriptor()-&gt;method(0),
+						controller, request, response, done);
+}
+void EchoService_Stub::FormTest(::google::protobuf::RpcController* controller,
+							const ::gdt::rpc_examples::FormTestMessage* request,
+							::gdt::rpc_examples::FormTestMessage* response,
+							::google::protobuf::Closure* done) {
+	channel_-&gt;CallMethod(descriptor()-&gt;method(1),
+						controller, request, response, done);
+}
+</code></pre>
+
+<p><strong>system/io_frame/net_options</strong></p>
+
+<ul>
+  <li>非阻塞IO: O_NONBLOCK</li>
+  <li>CloseOnExec: FD_CLOEXEC (该句柄在fork子进程后执行exec时就关闭)</li>
+  <li>SO_SNDBUF</li>
+  <li>SO_RCVBUF</li>
+  <li>SO_LINGER 设置套接口关闭后的行为</li>
+  <li>TCP_NODELAY：禁用Nagle‘s Algorithm(积累数据量到TCP Segment Size后发送)</li>
+  <li>SO_REUSEADDR：让端口释放后立即可以被再次使用</li>
+</ul>
+
+<p>更多参考资料：</p>
+
+<ul>
+  <li><a href="http://stackoverflow.com/questions/4257410/what-are-so-sndbuf-and-so-recvbuf">What are SO_SNDBUF and SO_RECVBUF</a></li>
+  <li><a href="http://blog.csdn.net/houlaizhe221/article/details/6580775">非阻塞IO</a></li>
+  <li><a href="http://blog.csdn.net/chrisniu1984/article/details/7050663">FD_CLOEXEC解析</a></li>
+  <li><a href="http://blog.chinaunix.net/uid-29075379-id-3905006.html">SO_RCVBUF and SO_SNDBUF</a>。
+接收缓冲区被TCP和UDP用来缓存网络上来的数据，一直保存到应用进程读走为止。一个发送缓冲区和一个接收缓冲区，TCP的全双工的工作模式以及TCP的滑动窗口便是依赖于这两个独立的buffer以及此buffer的填充状态。</li>
+  <li><a href="http://blog.csdn.net/factor2000/article/details/3929816">setsockopt ：SO_LINGER 选项设置</a></li>
+  <li><a href="http://jerrypeng.me/2013/08/mythical-40ms-delay-and-tcp-nodelay/">神秘的40毫秒延迟与 TCP_NODELAY</a></li>
+  <li><a href="http://www.cnblogs.com/mydomain/archive/2011/08/23/2150567.html">SO_REUSEADDR的意义</a>。一个端口释放后会等待两分钟之后才能再被使用，SO_REUSEADDR是让端口释放后立即就可以被再次使用。</li>
+  <li><a href="http://man7.org/linux/man-pages/man7/socket.7.html">socket option</a> socketoptions.h/cc里面的实现也看看</li>
+</ul>
+
+<h4 id="section-6">客户端代码</h4>
+
+<ul>
+  <li>RpcClient:
+负责所有RpcChannel对象的管理和对服务器端应答的处理</li>
+  <li>RpcChannel:
+代表通讯通道，每个服务器地址对应于一个RpcChannel对象，客户端通过它向服务器端发送方法调用请求并接收结果。</li>
+  <li>RpcController:
+存储一次rpc方法调用的上下文，包括对应的连接标识，方法执行结果等。</li>
+  <li>RpcServer:
+服务器端的具体业务服务对象的容器，负责监听和接收客户端的请求，分发并调用实际的服务对象方法。</li>
+</ul>
+
+<p><strong>rpc/client_connection</strong></p>
+
+<p>connection列表：</p>
+
+<pre><code>./system/io_frame/base_connection.h 这个是基类
+./net/http/client/connection.h
+./rpc/client_connection.h
+</code></pre>
+
+<p>客户端connection:</p>
+
+<pre><code>./client_connection.h:95:class ClientConnection : public BaseConnection
+./ckv_client_channel.h:23:class CkvClientConnection : public ClientConnection
+./http_rpc_channel.h:24:class HttpRpcConnection : public ClientConnection
+./qzone_client_channel.h:22:class QzoneClientConnection : public ClientConnection
+./rpc_channel_impl.h:42:  virtual ClientConnection* NewConnection() = 0;
+</code></pre>
+
+<p>用来在客户端建立连接，读取数据，发送数据等。</p>
+
+<p><strong>rpc/rpc_channel</strong></p>
+
+<pre><code>RpcChannelInterface : public ::google::protobuf::RpcChannel
+
+void CallMethod(
+	const google::protobuf::MethodDescriptor* method,
+	google::protobuf::RpcController* controller,
+	const google::protobuf::Message* request,
+	google::protobuf::Message* response,
+	google::protobuf::Closure* done);
+</code></pre>
+
+<p>发送请求的背后,最后调用的其实是RpcChannel的CallMethod函数.所以,要实现RpcChannel类,最关键的就是要实现这个函数,在这个函数中完成发送请求的事务。</p>
+
+<p>客户端channel这边主要还是基于 BaseConnection这个在做。还是那两个入口函数，read和write。
+ClientConnection里面会调用RpcClientCallContext。</p>
+
+<pre><code>./rpc_channel_impl.h:26:class RpcChannelImpl : public RpcChannelInterface {
+./qzone_client_channel.h:35:class QzoneClientChannel : public RpcChannelImpl {
+./http_rpc_channel.h:42:class HttpRpcChannel : public RpcChannelImpl {
+./ckv_client_channel.h:33:class CkvClientChannel: public RpcChannelImpl {
+</code></pre>
+
+<p><strong>rpc/rpc_controller</strong></p>
+
+<p>rpc_controller是一个rpc请求过程中的信息。</p>
+
+<pre><code>class RpcController : public google::protobuf::RpcController
+</code></pre>
+
+<p>主要保存下面这些信息：</p>
+
+<pre><code>int error_code_;
+std::string reason_;
+int timeout_;
+SocketAddressStorage remote_address_;
+int64_t timestamp_;
+bool in_use_;
+kDefaultTimeout = 2000ms;
+</code></pre>
+
+<p><strong>rpc/load_balance</strong></p>
+
+<p>LoadBalancer是一个单例。实现了4种load_balancer。
+客户端balancer列表，主要来做负载均衡。</p>
+
+<pre><code>./rpc/load_balancer.h 基类
+./rpc/domain_load_balancer.h
+./rpc/l5_load_balancer.h
+./rpc/list_load_balancer.h
+./rpc/single_load_balancer.h
+</code></pre>
+
+<p><strong>rpc/RpcClient</strong></p>
+
+<p>RpcClient是客户端的主类。一般情况下，一个客户端只需要有一个RpcClient。在初始化的时候，也可以设置线程个数，此个数等于PollThread的个数(多路器的个数)。</p>
+
+<p>利用RpcClient::OpenChannel创建RpcChannel。先根据scheme(目前有qzone,ckv,http三种)创建对应的Factory：</p>
+
+<pre><code>RpcChannelFactory* factory = GDT_RPC_GET_CHANNEL_FACTORY(scheme)。
+</code></pre>
+
+<p>再利用factory创建channel:</p>
+
+<pre><code>shared_ptr&lt;RpcChannelInterface&gt; channel_impl(factory-&gt;CreateChannel(multiplexers_, server, NetOptions()))。
+</code></pre>
+
+<p>创建channel时，先调用RpcChannel::Open。</p>
+
+<p>这里注册了三个Channel以及Factory</p>
+
+<pre><code>./rpc/ckv_client_channel.cc:22:GDT_RPC_REGISTER_CHANNEL("ckv", CkvClientChannel);
+./rpc/http_rpc_channel.cc:209:GDT_RPC_REGISTER_CHANNEL("http", HttpRpcChannel);
+./rpc/qzone_client_channel.cc:269:GDT_RPC_REGISTER_CHANNEL("qzone", QzoneClientChannel);
+</code></pre>
+
+<p><strong>Client代码流程</strong></p>
+
+<p>rpc client里发起请求，内部调用的都是RpcChannel。</p>
+
+<pre><code>Closure* done = ::NewCallback(this, &amp;TestClient::AsyncCallDone, i,
+							  controller, request, response);
+EchoService::Stub stub(channels_[i % channels_.size()].get());
+</code></pre>
+
+<p>如果是http请求，则Stub调用的是 HttpRpcChannel::CallMethod。根据是否有done回调函数，分为同步和异步。</p>
+
+<pre><code>class HttpRpcChannel : public RpcChannelImpl
+</code></pre>
+
+<p>CallMethod实际调用的是RpcChannelImpl::Call(context)。Call函数里，先获取到connection。</p>
+
+<pre><code>shared_ptr&lt;ClientConnection&gt; connection = GetRoute(call_context);
+</code></pre>
+
+<p>GetRoute里首先判断是否已有connected_，如果没有新需要新建立连接。</p>
+
+<pre><code>result.reset(NewConnection())
+(!result-&gt;Open((*multiplexers_)[index].get(), address, options_))
+</code></pre>
+
+<p>http_rpc_channel里，实现的是</p>
+
+<pre><code>class HttpRpcConnection : public ClientConnection。
+</code></pre>
+
+<p>在ClientConnection::Open函数里，调用了NonblockingConnect。</p>
+
+<p>OK，这下请求就算发送过去了。</p>
+
+<p>channel_number 这个设置主要是为什么？多一点有什么好处？channel是socket connect的个数。</p>
+
+<p>clinet 选取multiplexer的时候，所用的策略。实现在rpc_channel_impl.cc里。
+如果只有一个connection的话，其实一直就用了一个channel。</p>
+
+<pre><code>int index = connect_count_ % multiplexers_-&gt;size();  // Round-robbin
+</code></pre>
+
+<p>在客户端和服务端设置的threads number是PollThread的个数。channel number可以大于thread number。根据epoll机制，一个thread都可以支撑多个channel。</p>
+
+<p>一个channel里持有很多连接的map，可以共享连接。持有的是长连接通路。看这个函数就知道了：shared_ptr<clientconnection> RpcChannelImpl::GetRoute。</clientconnection></p>
+
+<p>只要channel没有新建，则连接一直保留，所以这时是长连接。</p>
+
+<p>创建连接的backtrace：</p>
+
+<p><img src="https://raw.githubusercontent.com/zzbased/zzbased.github.com/master/_posts/images/client_build_connection.png" alt="" /></p>
+
+<p>client异步调用的backtrace：</p>
+
+<p><img src="https://raw.githubusercontent.com/zzbased/zzbased.github.com/master/_posts/images/client_async_call.png" alt="" /></p>
+
+<h4 id="section-7">服务端代码</h4>
+
+<p><strong>system/io_frame/Multiplexer</strong></p>
+
+<p>常见的多路复用有：PPC(Process Per Connection)，TPC(Thread PerConnection)，这些模型的缺陷是： resource usage and context-switching time influence the ability to handle many clients at a time。</p>
+
+<p>select的缺点：</p>
+
+<ul>
+  <li>最大并发数限制。一个进程所打开的FD（文件描述符）是有限制的，由FD_SETSIZE设置。</li>
+  <li>效率问题，select每次调用都会线性扫描全部的FD集合。O(n)复杂度。</li>
+  <li>内核/用户空间的内存拷贝问题。通过内存拷贝让内核把FD消息通知给用户空间。</li>
+</ul>
+
+<p>poll解决了第一个缺点，但第二，三个缺点依然存在。</p>
+
+<p>epoll是一个相对完美的解决方案。(1)最大FD个数很大(由/proc/sys/fs/file-max给出)；(2)epoll不仅会告诉应用程序有I/0事件到来，还会告诉应用程序相关的信息，不用遍历；(3)内核与用户态传递消息使用共享内存；</p>
+
+<p>epoll里还有一个level triggered和edge triggered的区分，level triggered vs edge triggered：edge-trigger模式中，epoll_wait仅当状态发生变化的时候才获得通知(即便缓冲区中还有未处理的数据)；而level-triggered模式下，epoll_wait只要有数据，将不断被触发。具体请参考<a href="http://stackoverflow.com/questions/9162712/what-is-the-purpose-of-epolls-edge-triggered-option">the purpose of epoll’s edge triggered option</a></p>
+
+<p>分发器/多路器Multiplexer其中主要是通过epoll实现分发。<a href="http://ssdr.github.io/2015/01/epoll-manual/">epoll manual</a></p>
+
+<ul>
+  <li><a href="http://blog.csdn.net/sparkliang/article/details/4770655">Linux Epoll介绍和程序实例</a></li>
+  <li><a href="https://banu.com/blog/2/how-to-use-epoll-a-complete-example-in-c/">How to use epoll? A complete example in C</a></li>
+</ul>
+
+<p>Multiplexer类的主要函数有：Create，Poll，AddDescriptor，RemoveDescriptor，ModifyEvent，RegisterTimer等。RegisterTimer可以用来注册一个定时任务，这在某些场景还是蛮有用的。</p>
+
+<p>调用过AddDescriptor的文件有：</p>
+
+<pre><code>./net/http/client/connection.cc:214:  multiplexer()-&gt;AddDescriptor(this, Multiplexer::kIoEventReadWrite);
+./net/http/server/http_server.cc:246:  if (!multiplexer-&gt;AddDescriptor(connection.get())) {
+./net/http/server/listener.cc:123:  multiplexer-&gt;AddDescriptor(listener.get());
+./rpc/client_connection.cc:208:    multiplexer()-&gt;AddDescriptor(this, events);
+</code></pre>
+
+<p>Descriptor是FD描述类，其中持有成员变量fd以及close_callback_list，以及两个重要方法：OnWritable，OnReadable。这两个方法在连接时会被回调。</p>
+
+<pre><code>// MultiplexerNotifier is used to wake up epoll_wait
+class MultiplexerNotifier : public Descriptor
+</code></pre>
+
+<p>Multiplexer持有成员变量MultiplexerNotifier。即便每个multiplexer不监听socket，但都会create一个fd来用notify。</p>
+
+<p>更多Multiplexer的用法请参考：multiplexer_test。还解释了一个疑问：Poll函数的参数，是epoll_wait的timeout时间，也就是最多等待多久epoll_wait就返回。</p>
+
+<p><strong>system/io_frame/poll_thread</strong></p>
+
+<p>PollThread类是结合Multiplexer一起使用的，即Thread + Multiplexer。也就是每个PollThread，都在loop multiplexer，如果有事件，就处理。</p>
+
+<p><strong>system/io_frame/base_connection</strong></p>
+
+<p>base_connection继承自Descriptor。是connection基类：负责单次网络io。</p>
+
+<p>rpc server端，两个connection类，主要是用来处理服务端的socket连接。OnReadable, OnWritable。
+RpcServerConnection::OnReadable主要做了对http和qzone协议的区分，然后如果是http协议，则主要调用HttpServerConnection，如果是qzone协议，则主要调用QzoneServiceHandler里的方法。</p>
+
+<pre><code>class RpcServerConnection : public HttpServerConnection
+./net/http/server/connection.h
+./rpc/rpc_server_connection.h
+</code></pre>
+
+<p><strong>net/http_server</strong></p>
+
+<p>uri: 是用来解析url的一个工具类。</p>
+
+<p>譬如对于url:http://www.baidu.com/s?tn=monline_dg&amp;bs=DVLOG&amp;f=8&amp;wd=glog+DVLOG#fragment，利用Uri类，可以解析出Host,port,Scheme,Fragment,Query等参数。</p>
+
+<p>对于Query参数：tn=monline_dg&amp;bs=DVLOG&amp;f=8&amp;wd=glog+DVLOG，可以利用QueryParams类快速解析出每个name所对应的value。</p>
+
+<p>HttpServer常用的方法有：RegisterHttpHandler，RegisterPrefixHandler，Forward，RegisterStaticResource，AddLinkOnIndexPage等函数。</p>
+
+<p>看一下http_server_test，里面有一些不错的例子，我可以写一个test_server，实际试一下。</p>
+
+<p><strong>rpc/rpc_server</strong></p>
+
+<p>class RpcServer : public HttpServer</p>
+
+<p>在HttpServer的基础上，又新增了几个方法：RegisterService，RegisterJceProtoService(注册jce服务)。这些注册服务无非就是把service插入到成员变量vector中。</p>
+
+<p><strong>rpc/rpc_service_register</strong></p>
+
+<p>其中主要有三个方法，这个会被server端查找对应service的时候被用到。</p>
+
+<pre><code>// 用于qzone协议，qzone+pb
+const QzoneMethodContext* FindQzoneMethodContext(int qzone_version, int qzone_cmd) const;
+// 用于qzone+jce协议
+const JceMethodContext* FindJceMethodContext(int qzone_version, int qzone_cmd) const;
+// 用于protobuf
+bool FindMethodByName(const std::string&amp; full_name,
+	google::protobuf::Service** service,
+	const google::protobuf::MethodDescriptor** method_descriptor,
+	RpcErrorCode* error_code) const;
+</code></pre>
+
+<p><strong>service &amp;&amp; protocol</strong></p>
+
+<p>service列表：
+这个里面用途不大</p>
+
+<pre><code>./rpc/ckv_service.h
+./rpc/jce_proto_service.h
+./rpc/jce_service.h
+./rpc/rpc_builtin_service.h
+./rpc/udp_rpc_service.h
+</code></pre>
+
+<p>protocol列表：</p>
+
+<pre><code>./rpc/http_rpc_protocol.h
+./rpc/rpc_qzone_protocol.h
+</code></pre>
+
+<p>目前就支持两种协议：qzone，http。</p>
+
+<ul>
+  <li>GDT如果用http协议的话，则它的uri.Path类似为：”/rpc/gdt.rpc_examples.EchoService.Echo”。先发一个http包头，再发多个body(poppy的实现)，这里gdt rpc未做。</li>
+  <li>qzone协议的代码在：base_class_old/include/qzone_protocol.h</li>
+</ul>
+
+<p><strong>net/http/http_handler</strong></p>
+
+<p>handler列表如下，rpc目录下的两个handler，一个处理qzone协议，一个处理http协议。主要是在server角度，接受数据，解包，调用实际service，封包等操作。</p>
+
+<pre><code>./net/http/server/forward_handler.h
+./net/http/server/gflags_handler.h
+./net/http/server/http_handler.h
+./net/http/server/static_resource_handler.h
+./rpc/qzone_service_handler.h
+./rpc/rpc_http_handler.h
+</code></pre>
+
+<p>这里主要看下http_handler。HttpHandlerRegistry里持有两个成员变量：handler_map<em>，prefix_map</em>。它的功能与rpc_service_register类似。
+常用的方法有：两个Register，一个Find。Find访问的是HttpHandler。</p>
+
+<p>HttpHandler。它最重要的函数是：HandleRequest。具体实现为：</p>
+
+<pre><code>if (callback_) {
+	HttpRequest* request_copy = new HttpRequest();
+	request_copy-&gt;Swap(request);
+	HttpResponse* response = new HttpResponse();
+	shared_ptr&lt;HttpServerConnection&gt; shared_connection = connection-&gt;shared();
+	Closure* done = NewCallback(OnResponseDone, shared_connection,
+								request_copy, response, response_modifier);
+	callback_-&gt;Run(connection, request_copy, response, done);
+} else {
+	HttpResponse response;
+	simple_callback_-&gt;Run(request, &amp;response);
+	if (response_modifier)
+		response_modifier-&gt;Run(request, &amp;response);
+	PreprocessResponse(request, &amp;response);
+	connection-&gt;SendResponse(response);
+}
+</code></pre>
+
+<p>HttpServerConnection继承自BaseConnection(Descriptor)。初始化的时候必须传入的参数有：fd, multiplexer, handler_registry。</p>
+
+<p>HttpServerConnection什么时候被初始化呢？在HttpServer的OnAccept函数里，每从listen_socket获取一个fd，则初始化一个connection。handler_registry来自于HttpServer持有的成员变量HttpHandlerRegistry，multiplexer则是根据fd从multiplexers_按规则取出一个。</p>
+
+<pre><code>int index = fd % num_threads_;
+Multiplexer* multiplexer = multiplexers_[index].get();
+</code></pre>
+
+<p><strong>执行流程</strong></p>
+
+<ol>
+  <li>生成RpcServer::Options参数，这里可以指定服务端的poll_thread(即multiplexer)的线程数。</li>
+  <li>new RpcServer，因为RpcServer继承自HttpServer，HttpServer根据指定的threadnum(n)创建了n个multiplexer，并保存在multiplexers_。再接着RegisterDefaultPaths，背后调用的是handler_registry_-&gt;Register。</li>
+  <li>
+    <p>给RpcServer注册服务。Register Proto/jce service是RpcServer的独有方法，RegisterHttpHander是HttpServer的方法。这里的注册只是将service存储在类成员变量vector里。</p>
+
+    <pre><code> server.RegisterService(echo.get());
+ server.RegisterHttpHandler("/test", NewPermanentCallback(TestPage));
+</code></pre>
+
+    <p>protobuf的相关处理由rpc_http_handler.cc RpcHttpHandler完成。</p>
+
+    <pre><code> shared_ptr&lt;HttpHandler&gt; handler(
+     new RpcHttpHandler(rpc_service_registry_.get(),
+                     rpc_service_stats_.get()));
+ RegisterPrefixHandler(kHttpRpcPrefix, handler);
+</code></pre>
+
+    <p>其他http处理由http_hander完成。</p>
+  </li>
+  <li>
+    <p>执行server.Listen(FLAGS_ip, FLAGS_port)。在此之前，先执行RpcServer.BeforeListen()。这里会创建一个RpcServiceRegistry。把builtin服务和上一步注册的服务都写到RpcServiceRegistry。
+接着再调用HttpServerListener::Listen，将HttpServerListener添加到multiplexer[0]，即multiplexer-&gt;AddDescriptor(listener.get())。并且把HttpServer::OnAccept注册为Listen的回调函数accept_callback_。</p>
+
+    <p>HttpServerListener继承于Descriptor，当multiplexer[0]发现有listen_fs有IoEvent时，会调用HttpServerListener::OnReadable()。</p>
+  </li>
+  <li>
+    <p>server.Start()，启动多个PollThread。每个PollThread的Loop函数，multiplexer都执行Poll()。</p>
+  </li>
+  <li>
+    <p>最后是while (!server.IsStopped()){}。如果有client请求接入，最先会调用HttpServerListener::OnReadable()函数，这里会先调用accept函数，得到新连接的fd，再调用accept_callback_-&gt;Run(fd)。</p>
+
+    <pre><code> void HttpServer::OnAccept(int fd) {
+     int index = fd % num_threads_;
+     Multiplexer* multiplexer = multiplexers_[index].get();
+     shared_ptr&lt;Descriptor&gt; connection = MakeConnection(fd, multiplexer);
+     if (!connection) {
+         close(fd);
+         return;
+     }
+     if (!multiplexer-&gt;AddDescriptor(connection.get())) {
+         PLOG(WARNING) &lt;&lt; "Add socket to poll failed, fd=" &lt;&lt; fd;
+         return;
+     }
+     connection_manager_-&gt;Add(connection);
+     connection-&gt;PushCloseCallback(
+         NewCallback(connection_manager_.get(), &amp;ServerConnectionManager::Remove,
+                     connection));
+ }
+</code></pre>
+
+    <p>上面代码把新连接的fd也加入到multiplexer的监听中。</p>
+  </li>
+  <li>
+    <p>如果有数据可以读入，则将调用RpcServerConnection::OnReadable函数，首先判断是qzone协议，还是http协议。如果是qzone协议(protobuf or jce)，先注册RpcServerConnection::OnRequestDone()为done的回调函数，并创建QzoneServiceHandler。
+再调用HttpServerConnection::OnReadable函数，即BaseConnection::OnReadable()函数。
+在OnReadable()中，再调用BaseConnection::ReadPackets。
+GetNextSendingBuffer,GetPacketSize,OnPacketReceived,OnEofReceived是BaseConnection的纯虚函数。RpcServerConnection对这些纯虚函数进行了重写。</p>
+
+    <pre><code> int RpcServerConnection::GetPacketSize(const StringPiece&amp; buffer) {
+ return handler_ ? GetQzonePacketSize(buffer) :
+                     HttpServerConnection::GetPacketSize(buffer);
+ }
+</code></pre>
+
+    <p>譬如上面，如果发现是qzone协议的话，则调用的是GetQzonePacketSize。</p>
+
+    <p><img src="https://raw.githubusercontent.com/zzbased/zzbased.github.com/master/_posts/images/rpc_method_backtrace.png" alt="" /></p>
+
+    <p><img src="https://raw.githubusercontent.com/zzbased/zzbased.github.com/master/_posts/images/rpc_method_write.png" alt="" /></p>
+
+    <p><img src="https://raw.githubusercontent.com/zzbased/zzbased.github.com/master/_posts/images/rpc_method_requestdone.png" alt="" /></p>
+  </li>
+  <li>
+    <p>实际read packet和write packet的逻辑如下：</p>
+
+    <pre><code> ./system/io_frame/base_connection.cc:147:  int n = read(fd(), buffer, buffer_size);
+ ./system/io_frame/base_connection.cc:108:  int n = send(fd(), buffer, buffer_size, flags);
+</code></pre>
+
+    <p><img src="https://raw.githubusercontent.com/zzbased/zzbased.github.com/master/_posts/images/read_packet.png" alt="" /></p>
+
+    <p><img src="https://raw.githubusercontent.com/zzbased/zzbased.github.com/master/_posts/images/write_packet.png" alt="" /></p>
+
+    <p>客户端和服务端都是这个脉路。</p>
+  </li>
+  <li>
+    <p>把这两个图熟悉一下。一个是http协议请求时，server端的调用逻辑：</p>
+
+    <p><img src="https://raw.githubusercontent.com/zzbased/zzbased.github.com/master/_posts/images/http_echo_bt.png" alt="" /></p>
+
+    <p>另一个是qzone协议请求时，server端的调用逻辑：</p>
+
+    <p><img src="https://raw.githubusercontent.com/zzbased/zzbased.github.com/master/_posts/images/qzone_echo_bt.png" alt="" /></p>
+  </li>
+  <li>
+    <p>Content-Type设置kContentTypeProtobuf，kContentTypeJson，kContentTypeProtobufText时不同的处理方式。</p>
+
+    <pre><code>static const char* const kContentTypeJson = "application/json";
+static const char* const kContentTypeProtobuf = "application/x-protobuf";
+static const char* const kContentTypeProtobufText = "text/x-protobuf";
+</code></pre>
+
+    <p>需要在客户端那里设置相应的值，就可以得到处理逻辑。</p>
+  </li>
+</ol>
+
+<p><strong>jce是怎么处理的</strong></p>
+
+<ol>
+  <li>首先有jce格式，再定义一个proto格式。</li>
+  <li>
+    <p>实现下面三个的代码</p>
+
+    <pre><code> bool JceStructToPbMessage(const QZAP_NEW::wup_qzap_search_display_req* jce,
+                         MixerRequest* request);
+ bool PbMessageToJceStruct(const MixerResponse* response,
+                         QZAP_NEW::wup_qzap_search_display_rsp* jce);
+
+ GDT_RPC_DEFINE_JCE_PROTO_SERVICE(0, JceMixerService, MixerService,
+ GDT_RPC_JCE_METHOD(0, SearchAd, QZAP_NEW::wup_qzap_search_display_req,
+                     QZAP_NEW::wup_qzap_search_display_rsp)
+</code></pre>
+  </li>
+  <li>也就是说，如果是jce服务，rpc client会先将jce转成proto，再发起rpc调用，最后回报的时候再从proto解析为jce。</li>
+  <li>如果是qzone服务，其实理论上它也是header+proto，那么在接受包的时候，判断是qzone协议的话，先把包头去掉。</li>
+</ol>
+
+<p><strong>CKV这里的搞法</strong></p>
+
+<p>复用了客户端的multiplexer，继承自RpcClientCallContext。
+客户端主要负责写两个函数：EncodeRequest，OnPacketReceived。
+EncodeRequest这个函数是对消息做打包。OnPacketReceived是对消息做解包。</p>
+
+<p>还要注意，同步调用和异步调用的区别。
+异步调用的话，纯粹就是复用了multiplexer的功能，做回调。
+而同步的话，其实就是调用后，做一个响应的等待，利用的是AutoResetEvent, “./system/concurrency/event.h”。</p>
+
+<p><strong>poppy</strong></p>
+
+<p>除了二进制协议外，Poppy支持还以普通的HTTP协议，传输以JSON/protobuf文本格式定义的消息。很方便用各种脚本语言调用，甚至用 bash，调 wget/curl 都能发起 RPC 调用。
+Poppy的二进制协议与一般的设计不一样的是，它是以HTTP协议头为基础建立起来的，只是建立连接后的最初的采用HTTP协议，后续的消息往来直接用二进制协议，所以效率还是比较高的。</p>
+
+<p><strong>more</strong></p>
+
+<p>feeds的rpc服务可以多学习一下。adx的action, state与feeds的action, state以后也可以多学习学习！</p>
+
+<p>刚才又看了一遍 jeff的rpc，再看起来，感觉非常清晰了。
+还是有帮助的。至少这下搞了，这些rpc的实现我基本都理解了。再也不会觉得玄乎了。</p>
+
+<p>还有支持json格式。支持默认页面请求。这个到时候分享的时候再讲一下。</p>
+
+<p>明天再问一下陈老师，看看现在channel是不是线程安全的。现在这个样子感觉不是呢？
+而且默认的echo client，是4个线程，但是1个连接。也就是感觉4个epoll都在监听一个fd。这种感觉有点奇怪啊。</p>
+
+<p>做一下性能对比：在数据量比较小的时候，用qzone协议比http协议性能要好一倍。主要是包的大小影响比较大。</p>
+
+<h3 id="section-8">参考资料</h3>
+
+<ul>
+  <li><a href="http://stackoverflow.com/questions/121162/what-does-the-explicit-keyword-in-c-mean">What does the explicit keyword in C++ mean?</a></li>
+  <li><a href="http://en.cppreference.com/w/cpp/language/final">final specifier - C++ Reference</a></li>
+  <li>google rpc <a href="http://www.grpc.io">grpc</a></li>
+  <li><a href="https://github.com/google/protobuf/wiki/Third-Party-Add-ons">protobuf addons</a></li>
+  <li><a href="https://developers.google.com/protocol-buffers/docs/reference/cpp-generated">rpc definition</a></li>
+  <li><a href="http://djt.qq.com/article/view/327">poppy的官方资料</a></li>
+</ul>
+
+
+
+  
+</section>
+
+
+      </section>
+
+      <footer>
+        <p><small>Hosted on <a href="http://pages.github.com/">GitHub Pages</a> using the <a href="https://github.com/sodabrew/theme-dinky">Dinky theme</a> for <a href="http://jekyllbootstrap.com/">Jekyll Bootstrap</a></small></p>
+      </footer>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+  </body>
+</html>
+

@@ -1,0 +1,330 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="author" content="vincentyao" />
+    <title>Anaconda,theano,cuda,vs2012编程环境搭建</title>
+
+    <link rel="stylesheet" href="/assets/themes/dinky/css/styles.css">
+    <link rel="stylesheet" href="/assets/themes/dinky/css/pygment_trac.css">
+    <script src="/assets/themes/dinky/js/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header"><a href="/">100的技术博客</a></h1>
+        <p class="header">广告、算法与金融</p>
+        <ul>
+          
+          
+          
+
+
+  
+    
+      
+      	
+      	<li><a href="/archive.html">Archive</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories.html">Categories</a></li>
+      	
+      
+    
+  
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/pages.html">Pages</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags.html">Tags</a></li>
+      	
+      
+    
+  
+
+
+
+        </ul>
+        
+        
+        <div class="misc vcard">
+          <h4>about</h4>
+          <ul>
+            
+            <li class="contact"><address><span class="author fn n">vincentyao</span> - <span class="fn email">zerobased@foxmail.com</span></address></li>
+            
+            
+            <li class="github"><a href="http://github.com/zzbased/" rel="me">github.com/zzbased</a></li>
+            
+            
+            <li class="twitter"><a href="http://weibo.com/zerobased/" rel="me">weibo.com/zerobased</a></li>
+            
+            
+            <li class="twitter"><a href="http://twitter.com/callyling/" rel="me">twitter.com/callyling</a></li>
+            
+            
+            
+            
+            
+          </ul>
+        </div><!-- misc -->
+        
+      </header>
+
+      <section>
+        
+<section>
+  <h1>Anaconda,theano,cuda,vs2012编程环境搭建</h1>
+
+  
+<h2 id="anacondatheanocudavs2012">Anaconda+Theano+Cuda+Vs2012编程环境搭建</h2>
+
+<h3 id="section">一 基本概念介绍</h3>
+
+<h4 id="anaconda">1.1. anaconda</h4>
+<p>一个python科学计算发行版，具体可以参考下面的网页：
+  <a href="http://blog.csdn.net/rumswell/article/details/8927603">目前比较流行的python科学计算发行包</a>。其中比较了python(x,y),winpython, anaconda, canopy, sage。</p>
+
+<h4 id="theano">1.2. theano</h4>
+
+<p>深度学习python包。</p>
+
+<ul>
+  <li><a href="https://github.com/Theano/Theano">theano github地址</a></li>
+  <li><a href="http://deeplearning.net/software/theano/">theano 官方首页</a></li>
+  <li><a href="http://www.cnblogs.com/xueliangliu/archive/2013/04/03/2997437.html">theano 学习指南翻译</a></li>
+</ul>
+
+<h4 id="cuda">1.3. cuda</h4>
+
+<p>nvidia gpu编程库</p>
+
+<h3 id="section-1">二 安装流程</h3>
+
+<h4 id="section-2">2.1 我的安装环境</h4>
+<p>windows7 64bit. gpu是geforce gtx 660.</p>
+
+<h4 id="cuda-1">2.2 cuda安装</h4>
+<p>先安装cuda. 目前cuda的最新版是5.5，直接到官方网站下站即可。</p>
+
+<ul>
+  <li><a href="https://developer.nvidia.com/cuda-downloads">cuda 下载地址</a></li>
+  <li><a href="http://blog.csdn.net/yeyang911/article/details/17450963">手把手教你cuda5.5与VS2010的编译环境搭建</a></li>
+</ul>
+
+<p>下载完后直接傻瓜安装。在我的机器上，我将其安装到”D:\NVIDIA\CUDA”目录。
+安装完后，还要设置一些环境变量：</p>
+
+<pre><code>CUDA_PATH   D:\NVIDIA\CUDA\CUDAToolkit
+CUDA_BIN_PATH　　%CUDA_PATH%\bin
+CUDA_LIB_PATH　　%CUDA_PATH%\lib\x64
+CUDA_SDK_PATH　　D:\NVIDIA\CUDA\CUDASamples
+CUDA_SDK_BIN　　%CUDA_SDK_PATH%\Bin\win64
+CUDA_SDK_LIB　　%CUDA_SDK_PATH%\common\lib\x64
+PATH   %CUDA_BIN_PATH%
+</code></pre>
+
+<p>安装结束后，可以验证一下cuda是否成功。
+cd %CUDA_SDK_PATH%\Bin\win64\Release</p>
+
+<p>执行deviceQuery.exe 和 bandwithTest.exe</p>
+
+<p><img src="https://raw.githubusercontent.com/zzbased/zzbased.github.com/master/_posts/images/cuda_installed_result.png" alt="Image" /></p>
+
+<p>ok, cuda安装成功</p>
+
+<h4 id="cudavs">2.3 cuda+vs</h4>
+
+<p>再接着按照上面教程所说，继续安装vs2010.
+cuda官网上有一篇安装教程：
+<a href="http://docs.nvidia.com/cuda/cuda-getting-started-guide-for-microsoft-windows/">cuda+vs官网安装</a></p>
+
+<p>安装完后，根据下面文章的提示，还要设置一下nvcc.profile.
+<a href="http://stackoverflow.com/questions/2760374/why-cant-nvcc-find-my-visual-c-installation">Why can’t nvcc find my Visual C++ installation?</a></p>
+
+<p>Include this line
+  “compiler-bindir = C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\bin”
+in
+  “%CUDA_BIN_PATH%\nvcc.profile”</p>
+
+<p>一开始，我安装是vs2010 express版本。
+但是在编译cuda sample时，
+例如这个例子： %CUDA_SDK_PATH%\1_Utilities\bandwidthTest
+用win32平台编译没有问题，可以正确执行，但是在clean操作时，会出现下面的错误。
+会出现错误： nvcc : fatal error : nvcc cannot find a supported version of Microsoft Visual Studio. Only the versions 2008, 2010, and 2012 are supported</p>
+
+<p>经查，据网上说，是因为vs2010 express默认是不支持64bit编译的，所以可以参考下面两篇文章的介绍进行修复:
+https://devtalk.nvidia.com/default/topic/570348/windows-7-64bit-installation-weird-problems-/
+http://msdn.microsoft.com/en-us/library/vstudio/9yb4317s%28v=vs.110%29.aspx
+我这样做了，但是仍然没有弄好。可能是哪里有疏漏。直接的做法是：那就不装express版本，直接改装ultimate版吧。</p>
+
+<p>下载vs2012 ultimate版，无需激活。
+<a href="http://www.edencx.com/visualstudio2012.html">vs2012下载地址</a></p>
+
+<p>vs2012安装完成后，打开bandwidthTest，还有一点错误：
+说在这个目录下”C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\BuildCustomizations”找不到CUDA 5.5.props
+经过搜索，发现在D:\NVIDIA\CUDA\CUDAToolkit\extras\visual_studio_integration\MSBuildExtensions目录下有这个文件，于是把这个目录下的所有文件都拷到VS的BuildCustomizations目录下。</p>
+
+<p>这样总算可以完整编译bandwidthTest工程，x64和win32平台都是ok的。</p>
+
+<h4 id="anaconda-1">2.4 anaconda</h4>
+<p>搞好cuda的环境后，再来安装anaconda。anaconda的安装相对简单。</p>
+
+<h4 id="theana">2.5 theana</h4>
+<p>安装完anaconda后，再按照下面文章所述安装theano.</p>
+
+<ul>
+  <li><a href="http://blog.csdn.net/yeyang911/article/details/16357133">64位WIN7上成功安装theano,并运行了g++, GPU</a></li>
+  <li><a href="http://deeplearning.net/software/theano/install.html#windows-anaconda">官网上利用anaconda安装theano的介绍</a></li>
+</ul>
+
+<p>安装完theano后，还要设置环境变量：PYTHONPATH = D:\Anaconda\Lib\site-packages\theano。PYTHONPATH的含义和sys.path一样，就是python解释器寻找模块的路径。</p>
+
+<p>在使用theano之前，还需要配置theano。在home目录[打开cmd时所显示的目录]下编辑.theanorc.txt。</p>
+
+<pre><code>[blas]
+ldflags =
+[gcc]
+cxxflags = -ID:\Anaconda\MinGW
+[nvcc]
+fastmath = True
+flags=-LD:\Anaconda\libs
+compiler-bindir=C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin
+base_compiledir=path_to_a_directory_without_such_characters
+[global]
+floatX = float32
+device = gpu
+</code></pre>
+
+<h3 id="theano-1">三. 使用theano</h3>
+
+<h4 id="theano-using-the-gpu">3.1 theano using the GPU</h4>
+
+<p><a href="http://deeplearning.net/software/theano/tutorial/using_gpu.html#using-gpu">官方using the gpu文档</a></p>
+
+<p>下面是一个测试程序：</p>
+
+<pre><code>from theano import function, config, shared, sandbox
+import theano.tensor as T
+import numpy
+import time
+
+vlen = 10 * 30 * 768  # 10 x #cores x # threads per core
+iters = 1000
+
+rng = numpy.random.RandomState(22)
+x = shared(numpy.asarray(rng.rand(vlen), config.floatX))
+f = function([], T.exp(x))
+print f.maker.fgraph.toposort()
+t0 = time.time()
+for i in xrange(iters):
+    r = f()
+t1 = time.time()
+print 'Looping %d times took' % iters, t1 - t0, 'seconds'
+print 'Result is', r
+if numpy.any([isinstance(x.op, T.Elemwise) for x in f.maker.fgraph.toposort()]):
+    print 'Used the cpu'
+else:
+    print 'Used the gpu'
+</code></pre>
+
+<p>The program just computes the exp() of a bunch of random numbers. Note that we use the shared function to make sure that the input x is stored on the graphics device.</p>
+
+<p>在我的机器上，使用cpu执行是10多s. 而使用gpu则是0.5s左右。快了20多倍。</p>
+
+<pre><code>from theano import function, config, shared, sandbox, Out
+import theano.tensor as T
+import numpy
+import time
+
+vlen = 10 * 30 * 768  # 10 x # cores x # threads per core
+iters = 1000
+
+rng = numpy.random.RandomState(22)
+x = shared(numpy.asarray(rng.rand(vlen), config.floatX))
+f = function([],
+Out(sandbox.cuda.basic_ops.gpu_from_host(T.exp(x)),
+borrow=True))
+print f.maker.fgraph.toposort()
+t0 = time.time()
+for i in xrange(iters):
+    r = f()
+t1 = time.time()
+print 'Looping %d times took' % iters, t1 - t0, 'seconds'
+print 'Result is', r
+print 'Numpy result is', numpy.asarray(r)
+if numpy.any([isinstance(x.op, T.Elemwise) for x in f.maker.fgraph.toposort()]):
+    print 'Used the cpu'
+else:
+    print 'Used the gpu'
+</code></pre>
+
+<p>用上面这个程序，GPU执行，只需要0.01s。</p>
+
+<h4 id="deeplearningtutorials">3.2 DeepLearningTutorials</h4>
+
+<p>下载<a href="https://github.com/lisa-lab/DeepLearningTutorials">DeepLearningTutorials</a></p>
+
+<p>仔细研读里面的文件，开始学习deep learning。</p>
+
+<p>logistic_sgd.py 执行结果：</p>
+
+<p><img src="https://raw.githubusercontent.com/zzbased/zzbased.github.com/master/_posts/images/theano_lr_result.png" alt="Image" /></p>
+
+
+  
+</section>
+
+
+      </section>
+
+      <footer>
+        <p><small>Hosted on <a href="http://pages.github.com/">GitHub Pages</a> using the <a href="https://github.com/sodabrew/theme-dinky">Dinky theme</a> for <a href="http://jekyllbootstrap.com/">Jekyll Bootstrap</a></small></p>
+      </footer>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+  </body>
+</html>
+

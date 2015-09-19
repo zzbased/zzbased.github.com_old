@@ -1,0 +1,359 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="author" content="vincentyao" />
+    <title>最优化方法</title>
+
+    <link rel="stylesheet" href="/assets/themes/dinky/css/styles.css">
+    <link rel="stylesheet" href="/assets/themes/dinky/css/pygment_trac.css">
+    <script src="/assets/themes/dinky/js/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header"><a href="/">100的技术博客</a></h1>
+        <p class="header">广告、算法与金融</p>
+        <ul>
+          
+          
+          
+
+
+  
+    
+      
+      	
+      	<li><a href="/archive.html">Archive</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories.html">Categories</a></li>
+      	
+      
+    
+  
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/pages.html">Pages</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags.html">Tags</a></li>
+      	
+      
+    
+  
+
+
+
+        </ul>
+        
+        
+        <div class="misc vcard">
+          <h4>about</h4>
+          <ul>
+            
+            <li class="contact"><address><span class="author fn n">vincentyao</span> - <span class="fn email">zerobased@foxmail.com</span></address></li>
+            
+            
+            <li class="github"><a href="http://github.com/zzbased/" rel="me">github.com/zzbased</a></li>
+            
+            
+            <li class="twitter"><a href="http://weibo.com/zerobased/" rel="me">weibo.com/zerobased</a></li>
+            
+            
+            <li class="twitter"><a href="http://twitter.com/callyling/" rel="me">twitter.com/callyling</a></li>
+            
+            
+            
+            
+            
+          </ul>
+        </div><!-- misc -->
+        
+      </header>
+
+      <section>
+        
+<section>
+  <h1>最优化方法</h1>
+
+  
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
+
+<h1 id="section">最优化方法</h1>
+
+<p>一般我们接触到的最优化分为两类：</p>
+
+<ul>
+  <li>无约束最优化</li>
+  <li>有约束最优化</li>
+</ul>
+
+<h2 id="section-1">无约束最优化</h2>
+
+<p>通常对于无约束最优化，首先要判断是否为凸函数。</p>
+
+<p><a href="http://www.52nlp.cn/unconstrained-optimization-one">无约束最优化</a></p>
+
+<p><a href="http://www.cnblogs.com/daniel-D/p/3377840.html">机器学习中导数最优化方法</a></p>
+
+<p><a href="http://cseweb.ucsd.edu/~elkan/250B/logreg.pdf">最大似然、逻辑回归和随机梯度训练</a></p>
+
+<h3 id="section-2">梯度下降法</h3>
+
+<ul>
+  <li><a href="http://t.cn/8kFIzvk">教程:随机梯度下降(SGD) tricks《Stochastic gradient descent tricks》L Bottou (2012) </a></li>
+</ul>
+
+<h3 id="section-3">牛顿法</h3>
+
+<h3 id="section-4">拟牛顿法</h3>
+
+<h3 id="section-5">共轭梯度法</h3>
+
+<h2 id="section-6">有约束最优化</h2>
+
+<p>一般采用拉格朗日方程，kkt，对偶问题求解。</p>
+
+<p>譬如svm里，最大化几何间隔 max y(wx+b)/||w||</p>
+
+<p><a href="http://blog.csdn.net/v_july_v/article/details/7624837">支持向量机</a></p>
+
+<p>首先写出cost function：min [ 1/2*w^2 + max(0,1-y(wx+b)) ]</p>
+
+<p>可以看出，这是一个有约束的问题，那么就可以用到”拉普拉斯+KKT+对偶”来求解了。</p>
+
+<h3 id="kkthttpwwwmoozhicomtopicshow54a8a261c555c08b3d59d996"><a href="http://www.moozhi.com/topic/show/54a8a261c555c08b3d59d996">关于拉格朗日乘子法与KKT条件</a></h3>
+
+<p><a href="http://zh.wikipedia.org/wiki/最小上界">上确界=最小上界</a></p>
+
+<p>共轭函数描述这个最小上界随着y的变化所变化的情况，使函数值有界的y的取值范围是共轭函数的定义域。不管原函数的凹凸性如何，共轭函数一定是凸函数。</p>
+
+<p>拉格朗日对偶函数g(λ,ν)一定是凹的（不论原始优化问题凹凸性如何）。</p>
+
+<p>原始问题目标函数最优值是p⋆，有如下不等式：</p>
+
+<p><img src="https://raw.githubusercontent.com/zzbased/zzbased.github.com/master/_posts/images/lagrange_ruo_duiou.png" alt="" /></p>
+
+<p>拉格朗日对偶问题的最优值记为d⋆，相对于原始问题的最优值p⋆，d⋆≤p⋆，这个关系被称作弱对偶关系。</p>
+
+<p>如果原始问题和对偶问题的最优值相等，则是强对偶关系。</p>
+
+<p>通常情况下强对偶关系并不成立。但是如果原始问题是凸的，并且Slater条件成立的情况下，强对偶条件一定成立。</p>
+
+<p>KKT条件是一组解成为最优解的必要条件，如果原始问题是凸的，则KKT条件也是充分的。</p>
+
+<p><img src="https://raw.githubusercontent.com/zzbased/zzbased.github.com/master/_posts/images/kkt_condition.png" alt="" /></p>
+
+<p>上面前两行条件是原始问题的约束，第三行是拉格朗日函数的要求，第四行是互补松弛条件，最后一行是对拉格朗日函数取极值时候带来的一个必要条件。关于这上面的第五个条件，从几何意义上也可以得到比较明确的解释，即目标函数上的梯度下降方向与约束函数的梯度下降方法是平行的。</p>
+
+<p>如果一个凸优化问题有可微的目标函数和约束，并且满足Slater条件，则KKT条件是取得最优的充要条件：Slater条件保证了最优对偶间隙为零并且最优点可以取到；在此基础上x是最优当且仅当(x,λ,ν)满足KKT条件。</p>
+
+<p>KKT条件在优化问题中有重要意义。它可以用于如下方面：</p>
+
+<ul>
+  <li>有时候可以直接从KKT条件里得到最优的解析解。</li>
+  <li>等式约束的优化问题，可以通过KKT条件转化为无约束方程求零点问题。</li>
+  <li>有不等式约束的优化问题，可以使用KKT条件来简化，帮助求解。</li>
+</ul>
+
+<h2 id="section-7">最优化算法的并行化</h2>
+
+<h3 id="logistic-regression">Logistic Regression</h3>
+
+<p>这里主要以Logistic regression为例，讲一讲最优化算法的并行化实现。</p>
+
+<p>先看一下Logistic regression的损失函数：</p>
+
+<p>Logistic函数（或称为Sigmoid函数）为：
+<script type="math/tex">sigmoid(z)=f(z)=\frac{1}{1+e^{-z}}</script></p>
+
+<p>sigmoid函数的导数为：
+<script type="math/tex">\nabla f(z)=f(z)(1-f(z))</script></p>
+
+<p>对于线性回归来说，其分类函数为：
+<script type="math/tex">h(x)=w_0+\sum_{i=1}^p{w_ix_i}=w^Tx</script>
+其中x是特征向量，w是特征权重向量，p是特征向量维度。</p>
+
+<p>逻辑回归本质上是一个被logistic函数归一化后的线性回归，即在特征到结果的映射中加入了一层sigmoid函数映射。相比于线性回归，模型输出取值范围为[0，1]，</p>
+
+<p>如果y的取值是0或1，定义事件发生的条件概率为：
+<script type="math/tex">P(y=1|x)=\pi(x)=\frac{1}{1+exp(-h(x))}</script></p>
+
+<p>定义事件不发生的条件概率为：
+<script type="math/tex">P(y=0|x)=1-P(y=1|x)=\frac{1}{1+exp(h(x))}</script></p>
+
+<p>假设有n个观测样本，分别为：(\(x_1\),\(y_1\))，(\(x_2\),\(y_2\)) … (\(x_n\),\(y_n\))。</p>
+
+<p>得到一个观测值(\(x_i\),\(y_i\))的概率为：
+<script type="math/tex">P(y_i)=p_i^{y_i}(1-p_i)^{1-y_i}</script>  其中\(p_i=P(y_i=1|x_i)=\pi(x_i)\)</p>
+
+<p>由于各项观测独立，所以它们的联合分布可以表示为各边际分布的乘积：
+<script type="math/tex">l(w)=\prod_{i=1}^n{p_i^{y_i}(1-p_i)^{1-y_i}}</script></p>
+
+<p>对上述函数取对数，根据最大似然估计，得到最优化目标为：
+<script type="math/tex">\max{L(w)}=\max{log[l(w)]}=\max{\sum_{i=1}^n{y_i*log[\pi(x_i)] + (1-y_i)*log[1-\pi(x_i)]}}</script></p>
+
+<p>对L(w)求导得：
+<script type="math/tex">\nabla L(w) = \sum_{i=1}^n{(\pi(x_i)-y_i)x_i}</script></p>
+
+<p>而如果y的取值是1或-1，则最优化目标为：</p>
+
+<script type="math/tex; mode=display">\max{L(w)}=\max{\sum_{i=1}^n{-log[1+exp(-y_iw^Tx_i)]}}</script>
+
+<p>加上正则项后则是：</p>
+
+<script type="math/tex; mode=display">\min_w \frac{1}{2}||w||^2+C\sum_{i=1}^{n}log[1+exp(-y_iw^Tx_i)]</script>
+
+<h3 id="lrmapreduce">LR的MapReduce并行</h3>
+
+<p><img src="https://raw.githubusercontent.com/zzbased/zzbased.github.com/master/_posts/images/lbfgs.png" alt="" /></p>
+
+<p><img src="https://raw.githubusercontent.com/zzbased/zzbased.github.com/master/_posts/images/lbfgs_two_loops.png" alt="" /></p>
+
+<p><img src="https://raw.githubusercontent.com/zzbased/zzbased.github.com/master/_posts/images/lbfgs_two_loops_vf.png" alt="" /></p>
+
+<ul>
+  <li><a href="http://www.csie.ntu.edu.tw/~cjlin/libsvmtools/distributed-liblinear/">Distributed LIBLINEAR</a></li>
+  <li><a href="http://nips.cc/Conferences/2014/Program/event.php?ID=4831">Large scale learning spotlights</a></li>
+</ul>
+
+<h2 id="loss-function">Loss Function</h2>
+
+<p>不同的loss function对应着不同的机器学习算法。</p>
+
+<ul>
+  <li>0-1 loss: count(y != y’)  -&gt; Perceptron</li>
+  <li>squared loss: (y-y’)^2  -&gt; Linear regression</li>
+  <li>exponential loss: exp(-y<em>w^T</em>x)  -&gt; Adaboost</li>
+  <li>hinge loss: max(0, 1-y<em>w^T</em>x)  -&gt; SVM</li>
+  <li>cross entropy loss: log2(1 + exp(-y<em>w^T</em>x))  -&gt; Logistic regression</li>
+</ul>
+
+<p>更深入一步，hinge loss，exp loss，cross entropy loss都是0-1 loss的上界。</p>
+
+<p><img src="https://raw.githubusercontent.com/zzbased/zzbased.github.com/master/other/VC理论/hinge-exp-logistic-bounds.png" alt="" /></p>
+
+<p>我们可能将关注这样一些问题：为什么线性回归和逻辑回归可以用于做分类？为什么逻辑回归的loss function不取squared loss？SVM的优越之处在哪里？为什么1范数可以得到稀疏解？为什么2范数能得到最大间隔解？正则化与贝叶斯估计的联系？</p>
+
+<p><a href="http://web.mit.edu/lrosasco/www/publications/loss.pdf">loss.pdf</a></p>
+
+<p><a href="https://github.com/JohnLangford/vowpal_wabbit/wiki/Loss-functions">vowpal_wabbit Loss-functions </a></p>
+
+<p><a href="http://en.wikipedia.org/wiki/Loss_function">Loss function wiki</a></p>
+
+<p><a href="http://image.diku.dk/shark/sphinx_pages/build/html/rest_sources/tutorials/concepts/library_design/losses.html">shark loss function</a></p>
+
+<p>adaboost，svm，lr三个算法的关系：</p>
+
+<p>三种算法的分布对应exponential loss（指数损失函数），hinge loss，log loss（对数损失函数），无本质区别。应用凸上界取代0、1损失，即凸松弛技术。从组合优化到凸集优化问题。凸函数，比较容易计算极值点。</p>
+
+<ul>
+  <li>关于loss function，记录几点：
+    <ul>
+      <li>SVC &amp; SVR：对于SVC，由于hinge loss: max(0, 1-yw’x)，SVC会特别关注那些难分类的点（classify with least certainty; support vectors, i.e., sv）；对于SVR，由于epsilon loss: max(0, |y-w’x|-e)，SVR类似的会关注那些residual比较大的点（”outlier”; prediction with least certainty too; sv）</li>
+      <li>SVM和ANN 1) SVM的hinge loss func: max(0, 1 - y’x), 当“激活量” y’x 超过阈值1，那么就不计损失即损失为零 2) Deep Sparse Rectifier的rectifier activation func: max(0, x), 看图它在零点处不可导带来了稀疏性，可大量约简神经网络参数规模 3) loss function + penalty regularization</li>
+      <li>SVM &amp; Boosting：SVM用loss func来剔除了那些容易的点，实际相当于给样本加了权重0，使得模型更加关注难预测的点；Boosting每次迭代后调整权重：降低容易点的权重，增加难预测点的权重，也使得模型更关注难预测的点</li>
+    </ul>
+  </li>
+  <li>
+    <p><a href="http://www.cs.nyu.edu/~yann/talks/lecun-20071207-nonconvex.pdf">Who is afraid of non-convex loss functions?</a></p>
+
+    <p>Yann LeCun在2007年的讲义。目前大部分loss function都是凸函数，譬如lr，svms，exponential-family graphical models，凸函数一个很优秀的性质，但有些时候却是限制，坚持凸性将增大模型规模或者求解最优化问题方法的复杂程度。</p>
+
+    <p>Deep architectures势必将带来非凸的loss function。但是(1)采用一个合适的模型架构(即便将带来loss function非凸)比坚持凸性更加重要；(2) 即使是对于浅层模型，例如SVM，使用非凸的loss function实际上可以带来准确率和性能的提升。</p>
+
+    <p>对于神经网络，conjugate gradient, BFGS, LM-BFGS没有stochastic gradient好用；对于SVM，“batch” quadratic方法没有SMO好用，而SMO又没有on-line methods好用；对于CRF，Iterative scaling没有stochastic gradient好用；虽说stochastic gradient没有很多的理论保证，但经验证明是不错的选择。</p>
+  </li>
+</ul>
+
+<h2 id="section-8">最优化算法参考资料</h2>
+
+<ul>
+  <li>
+    <p><a href="http://www.erogol.com/comparison-sgd-vs-momentum-vs-rmsprop-vs-momentumrmsprop/">几点改进随机梯度下降(SGD)过程的tricks</a>
+  对梯度本身的探究也是特别有价值的，这里的优化方法，就是让梯度的update更平滑和稳定，记录之前在这个方向上的梯度，做平滑，并防止不同batch带来的突变是有价值的</p>
+  </li>
+  <li>
+    <p><a href="http://stanford.edu/~boyd/cvxbook/">凸优化，convex optimization</a></p>
+  </li>
+  <li>
+    <p>@王威廉 加州伯克利大学博士 Aria Haghighi 写了一篇超赞的数值优化博文，从牛顿法到拟牛顿法，再到BFGS以及L-BFGS
+<a href="http://aria42.com/blog/2014/12/understanding-lbfgs/">Numerical Optimization: Understanding L-BFGS</a> 图文并茂，还有伪代码，强烈推荐。
+@陈如山： 他的这篇文章写的比较精简，我之前也写了几篇关于常用优化算法的文章，从 steepest descent 到 newton 再到 quasi-newton (包括 lbfgs)，包含所有公式推导及部分收敛性分析和 python 代码. <a href="http://juscodit.github.io">地址1</a>，<a href="http://blog.csdn.net/itplus/article/details/21896453">地址2</a></p>
+  </li>
+  <li>
+    <p>比较全面的优化教材 http://t.cn/Rwx3S6S @黄萱菁 发起的讨论 @Copper_PKU: Optimization for Machine Learning（Wright） @夏睿 Numerical Optimization（Nocedal）@wzxhome 推荐Nesterov @程龚_NJU 推荐Dingzhu Du的 @debiandsc 推荐Bertsekas和Ghaoui的</p>
+
+    <p>好像除了这本大家谈的比较多的只有Introductory Lectures on Convex Optimization by Yurii Nesterov http://t.cn/Rwyz6Nb 其他的我也没印象。</p>
+
+    <p>Nocedal 的Numerical Optimization，L-BFGS 算法提出者 http://t.cn/RwUQ40Q</p>
+
+    <p><a href="http://enpub.fulton.asu.edu/cseml/Fall2008_ConvOpt/book/Intro-nl.pdf">Introductory Lectures on Convex Programming</a></p>
+
+    <p><a href="http://www.bioinfo.org.cn/~wangchao/maa/Numerical_Optimization.pdf">Numerical_Optimization</a></p>
+
+    <p><a href="http://mitpress.mit.edu/books/optimization-machine-learning">Optimization for Machine Learning</a></p>
+
+    <p><a href="https://web.stanford.edu/~boyd/cvxbook/bv_cvxbook.pdf">Convex Optimization</a></p>
+
+    <p><a href="http://www2.isye.gatech.edu/~nemirovs/Lect_EMCO.pdf">EFFICIENT METHODS IN CONVEX PROGRAMMING</a></p>
+  </li>
+</ul>
+
+
+  
+</section>
+
+
+      </section>
+
+      <footer>
+        <p><small>Hosted on <a href="http://pages.github.com/">GitHub Pages</a> using the <a href="https://github.com/sodabrew/theme-dinky">Dinky theme</a> for <a href="http://jekyllbootstrap.com/">Jekyll Bootstrap</a></small></p>
+      </footer>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+  </body>
+</html>
+

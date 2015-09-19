@@ -1,0 +1,233 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="author" content="vincentyao" />
+    <title>论文库回顾</title>
+
+    <link rel="stylesheet" href="/assets/themes/dinky/css/styles.css">
+    <link rel="stylesheet" href="/assets/themes/dinky/css/pygment_trac.css">
+    <script src="/assets/themes/dinky/js/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header"><a href="/">100的技术博客</a></h1>
+        <p class="header">广告、算法与金融</p>
+        <ul>
+          
+          
+          
+
+
+  
+    
+      
+      	
+      	<li><a href="/archive.html">Archive</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories.html">Categories</a></li>
+      	
+      
+    
+  
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/pages.html">Pages</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags.html">Tags</a></li>
+      	
+      
+    
+  
+
+
+
+        </ul>
+        
+        
+        <div class="misc vcard">
+          <h4>about</h4>
+          <ul>
+            
+            <li class="contact"><address><span class="author fn n">vincentyao</span> - <span class="fn email">zerobased@foxmail.com</span></address></li>
+            
+            
+            <li class="github"><a href="http://github.com/zzbased/" rel="me">github.com/zzbased</a></li>
+            
+            
+            <li class="twitter"><a href="http://weibo.com/zerobased/" rel="me">weibo.com/zerobased</a></li>
+            
+            
+            <li class="twitter"><a href="http://twitter.com/callyling/" rel="me">twitter.com/callyling</a></li>
+            
+            
+            
+            
+            
+          </ul>
+        </div><!-- misc -->
+        
+      </header>
+
+      <section>
+        
+<section>
+  <h1>论文库回顾</h1>
+
+  
+<p>把自己的论文库浏览了一遍，将一些我自己认为有价值的论文整理一下，做一点读书笔记，权作备忘。</p>
+
+<h3 id="types-of-machine-learning">types of machine learning</h3>
+<p>Types of Machine Learning Algorithms; Taiwo Oladipupo Ayodele</p>
+
+<h3 id="section">最优化</h3>
+<p><a href="http://www.chokkan.org/software/liblbfgs/">lbfgs</a>，一种拟牛顿法，经常用来做凸优化。任何凸函数优化，将cost fuction和gradient function写好了，输入进去，就可以求得最优值。</p>
+
+<p>譬如对于svm模型，求svm的squared hinge loss:</p>
+
+<p>yp=x*w; idx=find(yp.*y “&lt;” 1); e=yp(idx)-y(idx); f=e’*e+c*w*w; df=2(x(idx,:)’*e+c*w);</p>
+
+<p>计算完cost function: f和gradient function: df, 输入到lbfgs即可。</p>
+
+<p>余凯：说hinge loss, 当年主要卖点是得到稀疏解，也即所谓支撑向量(SV). 今天看来，这个性质已不重要：</p>
+
+<ol>
+  <li>这是一个特殊凸优化算法的结果，而非统计学习的本质问题；</li>
+  <li>实践中，当年kernel系统得到稀疏解带来计算上的便捷，但现在我们已不用kernel;</li>
+  <li>甚至稀疏性这个结论已被推翻，已证明SV是线性增长。</li>
+</ol>
+
+<p><a href="http://research.microsoft.com/en-us/downloads/b1eb1016-1738-4bd5-83a9-370c9d498a03/">owl-qn</a>  lbfgs+L1正则化。到目前为止，简单的lr用的还是这个库。</p>
+
+<p><a href="https://github.com/zzbased/zzbased.github.com/blob/master/_posts/doc/LR逻辑回归-从入门到精通.pdf">逻辑回归-从入门到精通</a>  这是目前看到对逻辑回归讲得最好的文章。
+这是另一篇<a href="http://www.csdn.net/article/2014-02-13/2818400-2014-02-13">文章</a>，主要讲述怎么并行化逻辑回归。</p>
+
+<p><img src="https://raw.github.com/zzbased/zzbased.github.com/master/_posts/images/lr_parallel.png" alt="lr parallel" /></p>
+
+<p>一些有趣的机器学习库： <a href="https://github.com/JohnLangford/vowpal_wabbit/wiki">vowpal_wabbit</a>，<a href="http://blog.sina.com.cn/s/blog_569d6df801014x4x.html#bsh-24-170411859">c++ library</a>，<a href="http://scikit-learn.org/stable/">scikit</a></p>
+
+<h3 id="classification">classification</h3>
+<p>Supervised Machine Learning: A Review of Classification Techniques; S. B. Kotsiantis</p>
+
+<h3 id="crf">crf</h3>
+<p>An Introduction to Conditional Random Fields;Charles Sutton。 crf相关的文章有很多，我是看这篇入门的。其实想深入学习，还是推荐看代码。<a href="http://www.chokkan.org/software/crfsuite/">crtsuite</a>是一份不错的代码。</p>
+
+<h3 id="svm">SVM</h3>
+<p>A Gentle Introduction to Support Vector Machines in Biomedicine;Alexander Statnikov。 这个介绍很全面。</p>
+
+<p>july的这篇文章写得也不错。<a href="http://blog.csdn.net/v_july_v/article/details/7624837">支持向量机通俗导论（理解SVM的三层境界）</a></p>
+
+<h3 id="topic-model">topic model</h3>
+<p>Parameter estimation for text analysis; Gregor Heinrich。最佳入门材料。</p>
+
+<p>A Note on the Expectation-Maximization (EM) Algorithm; ChengXiang Zhai。em算法最佳入门材料。</p>
+
+<p><a href="http://blog.csdn.net/yangliuy/article/details/8330640">概率语言模型及其变形系列</a>  一个博客文章，写的挺不错的。</p>
+
+<p>TOPIC MODELS;  DAVID M. BLEI , JOHN D. LAFFERTY</p>
+
+<p>GIBBS SAMPLING FOR THE UNINITIATED; Philip Resnik。gibbs sampling最佳入门材料。</p>
+
+<p>YahooLDA:An Architecture for Parallel Topic Models;Alexander Smola。开源实现yahoo_lda的论文。看完论文，还是建议看代码，跑demo。<a href="https://github.com/sudar/Yahoo_LDA">code</a></p>
+
+<p>PLDA: Parallel Latent Dirichlet Allocation for Large-scale Applications; Yiwang。yiwang基于mpi和mapreduce的一个lda实现。后来yiwang又实现了一个更牛逼的系统:peacock。</p>
+
+<h3 id="boosting">boosting</h3>
+<p>A Short Introduction to Boosting; Yoav Freund</p>
+
+<p>The Boosting Approach to Machine Learning An Overview; Robert E. Schapire</p>
+
+<h3 id="semantic-analysis-system">Semantic Analysis System</h3>
+<p>A Web-based Kernel Function for Measuring the Similarity
+of Short Text Snippets; Mehran Sahami , Timothy D. Heilman。搜索广告sas的参考文献。</p>
+
+<h3 id="deep-learning">deep learning</h3>
+<p><a href="http://ufldl.stanford.edu/wiki/index.php/UFLDL%E6%95%99%E7%A8%8B">UFLDL</a></p>
+
+<p><a href="http://blog.csdn.net/zouxy09/article/details/8775360">Deep Learning（深度学习）学习笔记整理系列</a></p>
+
+<p>Learning Deep Architectures for AI; Yoshua Bengio。综述文章。</p>
+
+<p>Deep Learning for NLP(without Magic)	; Richard Socher, Yoshua bengio。nlp综述文章。</p>
+
+<p>Representation Learning: A Review and New Perspectives; Yoshua Bengio。综述文章。
+  
+Hierarchical Convolutional Deep Learning in Computer Vision; Matthew D. Zeiler。zeiler是imagenet 2013 image classification的第一名，这是他的博士论文，挺有阅读价值的。</p>
+
+<h3 id="recommender">Recommender</h3>
+<p><a href="http://zzbased.github.io/2015/01/03/recommendation_algorithms.html">本站文章</a></p>
+
+<h3 id="online-learning">Online learning</h3>
+<p>Online Learning and Online Convex Optimization; By Shai Shalev-Shwartz</p>
+
+<h3 id="dsp">DSP</h3>
+<p>DSP中的算法初探; 江申</p>
+
+<p>实时定向广告技术-DSP框架及算法;则成</p>
+
+<h3 id="ctr">ctr</h3>
+<p>Ad Click Prediction: a View from the Trenches;H. Brendan McMahan</p>
+
+<h3 id="nlp">NLP</h3>
+<p><a href="http://pages.cs.wisc.edu/~jerryzhu/pub/ZhuCCFADL46.pdf">statistical machine learning for nlp; by xiaojin zhu</a></p>
+
+
+
+  
+</section>
+
+
+      </section>
+
+      <footer>
+        <p><small>Hosted on <a href="http://pages.github.com/">GitHub Pages</a> using the <a href="https://github.com/sodabrew/theme-dinky">Dinky theme</a> for <a href="http://jekyllbootstrap.com/">Jekyll Bootstrap</a></small></p>
+      </footer>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+  </body>
+</html>
+

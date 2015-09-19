@@ -1,0 +1,177 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="author" content="vincentyao" />
+    <title>合约cpm广告算法解析</title>
+
+    <link rel="stylesheet" href="/assets/themes/dinky/css/styles.css">
+    <link rel="stylesheet" href="/assets/themes/dinky/css/pygment_trac.css">
+    <script src="/assets/themes/dinky/js/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header"><a href="/">100的技术博客</a></h1>
+        <p class="header">广告、算法与金融</p>
+        <ul>
+          
+          
+          
+
+
+  
+    
+      
+      	
+      	<li><a href="/archive.html">Archive</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories.html">Categories</a></li>
+      	
+      
+    
+  
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/pages.html">Pages</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags.html">Tags</a></li>
+      	
+      
+    
+  
+
+
+
+        </ul>
+        
+        
+        <div class="misc vcard">
+          <h4>about</h4>
+          <ul>
+            
+            <li class="contact"><address><span class="author fn n">vincentyao</span> - <span class="fn email">zerobased@foxmail.com</span></address></li>
+            
+            
+            <li class="github"><a href="http://github.com/zzbased/" rel="me">github.com/zzbased</a></li>
+            
+            
+            <li class="twitter"><a href="http://weibo.com/zerobased/" rel="me">weibo.com/zerobased</a></li>
+            
+            
+            <li class="twitter"><a href="http://twitter.com/callyling/" rel="me">twitter.com/callyling</a></li>
+            
+            
+            
+            
+            
+          </ul>
+        </div><!-- misc -->
+        
+      </header>
+
+      <section>
+        
+<section>
+  <h1>合约cpm广告算法解析</h1>
+
+  
+<h1 id="cpm">合约cpm广告算法解析</h1>
+
+<h2 id="cpm-1">什么是合约cpm广告</h2>
+
+<h2 id="cpm-2">合约cpm广告数学模型</h2>
+
+<p>合约cpm广告分配问题的输入，可以用一个二部图(bipartite graph)来表示，如下图所示。
+图的左边是supply nodes，也就是impressions。我们根据定向人群将impression划分成不同的簇，每个簇上的数值表示该定向人群下的impression预估总数，以s_i表示；图的右边是demand nodes，即合约广告，其数值表示该合约广告所需要曝光的量，以d_j表示。
+如果supply i 满足合约广告 j 的定向需求，则在s_i 与d_j 之间添加一条直线(edge)，表示是可match的。给每条直线一个权重x_{i,j}，表示supply i分配给合约广告 j的比例。</p>
+
+<p><img src="https://raw.githubusercontent.com/zzbased/zzbased.github.com/master/_posts/images/contract_ad_bipartite.jpg" alt="" /></p>
+
+<p>我们的优化目标是：找到一个合理的分配方案，使得满足下面的条件：</p>
+
+<p><img src="https://raw.githubusercontent.com/zzbased/zzbased.github.com/master/_posts/images/gd_allocation_target.png" alt="" /></p>
+
+<p>上式中：\tau(i)表示所有与supply i有连接的合约广告集合，\tau(j)表示所有满足合约广告j的supply集合。</p>
+
+<p>合约cpm播放的目标有两个：(1)最大化展现效率；(2)最小化补偿。最大化展现效率就是尽可能让所有demand端需要的曝光都能得到满足；最小化补偿和最大化展现效率意思一致，就是让未能足量曝光导致的补偿尽可能少。
+把上述目标进一步优化后，得到进阶的目标函数：</p>
+
+<p><img src="https://raw.githubusercontent.com/zzbased/zzbased.github.com/master/_posts/images/gd_allocation_target2.png" alt="" /></p>
+
+<p>上面式子中，第(1)个约束条件是demand constraints，第(2)个约束条件是supply constraints，第(3)个约束条件是非负性约束。</p>
+
+<h2 id="cpm-3">合约cpm广告系统模型</h2>
+
+<p><img src="https://raw.githubusercontent.com/zzbased/zzbased.github.com/master/_posts/images/gd_system_architecture.png" alt="" /></p>
+
+<h2 id="hwm">HWM算法</h2>
+
+<p><img src="https://raw.githubusercontent.com/zzbased/zzbased.github.com/master/_posts/images/hwm_algorithms.png" alt="" /></p>
+
+<h2 id="shale">Shale算法</h2>
+
+<p>Shale算法是HMM算法的升级版。</p>
+
+<h2 id="section">更多参考资料</h2>
+
+<p><a href="https://github.com/zzbased/zzbased.github.com/blob/master/_posts/doc/在线广告分配综述.pdf">devinzheng 在线分配算法综述</a></p>
+
+
+  
+</section>
+
+
+      </section>
+
+      <footer>
+        <p><small>Hosted on <a href="http://pages.github.com/">GitHub Pages</a> using the <a href="https://github.com/sodabrew/theme-dinky">Dinky theme</a> for <a href="http://jekyllbootstrap.com/">Jekyll Bootstrap</a></small></p>
+      </footer>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+  </body>
+</html>
+

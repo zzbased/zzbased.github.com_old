@@ -1,0 +1,195 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="author" content="vincentyao" />
+    <title>利用jekyll+github搭建简易博客</title>
+
+    <link rel="stylesheet" href="/assets/themes/dinky/css/styles.css">
+    <link rel="stylesheet" href="/assets/themes/dinky/css/pygment_trac.css">
+    <script src="/assets/themes/dinky/js/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header"><a href="/">100的技术博客</a></h1>
+        <p class="header">广告、算法与金融</p>
+        <ul>
+          
+          
+          
+
+
+  
+    
+      
+      	
+      	<li><a href="/archive.html">Archive</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories.html">Categories</a></li>
+      	
+      
+    
+  
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/pages.html">Pages</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags.html">Tags</a></li>
+      	
+      
+    
+  
+
+
+
+        </ul>
+        
+        
+        <div class="misc vcard">
+          <h4>about</h4>
+          <ul>
+            
+            <li class="contact"><address><span class="author fn n">vincentyao</span> - <span class="fn email">zerobased@foxmail.com</span></address></li>
+            
+            
+            <li class="github"><a href="http://github.com/zzbased/" rel="me">github.com/zzbased</a></li>
+            
+            
+            <li class="twitter"><a href="http://weibo.com/zerobased/" rel="me">weibo.com/zerobased</a></li>
+            
+            
+            <li class="twitter"><a href="http://twitter.com/callyling/" rel="me">twitter.com/callyling</a></li>
+            
+            
+            
+            
+            
+          </ul>
+        </div><!-- misc -->
+        
+      </header>
+
+      <section>
+        
+<section>
+  <h1>利用jekyll+github搭建简易博客</h1>
+
+  
+<h2 id="jekyllgithub">利用jekyll+github搭建简易博客</h2>
+
+<h3 id="jekyll">Jekyll步骤</h3>
+
+<p><a href="http://jekyllthemes.org">Jekyll theme</a></p>
+
+<p><a href="https://help.github.com/articles/using-jekyll-with-pages/">Using Jekyll with Pages</a></p>
+
+<p><a href="http://yansu.org/2014/02/12/how-to-deploy-a-blog-on-github-by-jekyll.html">在Github上搭建Jekyll博客和创建主题</a></p>
+
+<p><a href="http://www.pkuwwt.tk/linux/2013-12-03-jekyll-using-mathjax/">Jekyll中使用MathJax</a></p>
+
+<ul>
+  <li>在github上创建username.github.com目录。</li>
+  <li>安装jekyll，然后jekyll new username.github.com，将这些内容git push到github。</li>
+</ul>
+
+<h3 id="jekyll-bootstrap">Jekyll-bootstrap步骤</h3>
+<ol>
+  <li>
+    <p>Github工作目录：
+搭建Github工作目录，需要先把ssh通道建立好，参看下面两篇文章。<a href="https://help.github.com/articles/generating-ssh-keys">产生ssh keys</a>, <a href="https://help.github.com/articles/error-permission-denied-publickey">可能碰到的问题</a></p>
+  </li>
+  <li>
+    <p>markdown编辑器：
+在macbook上，我使用的编辑器是lightpaper. 引用图像存储链接服务是 <a href="droplr.com">droplr</a></p>
+  </li>
+  <li>
+    <p>我使用的是<a href="http://jekyllbootstrap.com">jekyllbootstrap</a>。号称三分钟可以教会搭建github博客，事实就是如此。参考这篇入门指南即可。<a href="http://jekyllbootstrap.com/usage/jekyll-quick-start.html">入门指南</a></p>
+
+    <p>如果不喜欢默认的主题，可以按照示例做修改<a href="http://jekyllthemes.org">jekyllthemes</a>，<a href="http://jekyllbootstrap.com/usage/jekyll-theming.html">jekyll-theming</a>。</p>
+  </li>
+  <li>
+    <p>需要注意的是，如果在上面准备工作里github的ssh设置没能成功。
+ git remote set-url origin git@github.com:zzbased/zzbased.github.com.git
+ 可以更改为https地址:
+ git remote set-url origin https://github.com/zzbased/zzbased.github.com.git</p>
+  </li>
+  <li>
+    <p>安装好jekyll后，就可以本地调试。我们利用index.md，可以在原基础上做修改即可。</p>
+  </li>
+  <li>
+    <p>然后在_post文件夹里，删除原来的example。利用rake post title=”xxx”新增一个md文件。接下来就开始编辑了。</p>
+  </li>
+  <li>
+    <p>如果不喜欢页面最下面的footer, 可以在“./_includes/themes/twitter/default.html”文件中，把footer屏蔽掉。不过建议还是留着，可以让更多的人接触到这项工具。</p>
+  </li>
+  <li>
+    <p>在本地执行 jekyll serve,然后就可以在本机浏览器上通过0.0.0.0:4000预览网站。</p>
+  </li>
+</ol>
+
+<p>备注：
+目前我的博客使用的是原生的jekyll，没有采用jekyll-bootstrap。后来想想还是应该换用jekyll-bootstrap，因为它有评注的功能。</p>
+
+<p><a href="http://jekyllbootstrap.com/usage/blog-configuration.html">常见的jekyll配置</a></p>
+
+<p><a href="http://stackoverflow.com/questions/19577049/jekyll-bootstrap-commenting-function-without-advertisement">关掉Jekyll Bootstrap的comments广告</a></p>
+
+
+  
+</section>
+
+
+      </section>
+
+      <footer>
+        <p><small>Hosted on <a href="http://pages.github.com/">GitHub Pages</a> using the <a href="https://github.com/sodabrew/theme-dinky">Dinky theme</a> for <a href="http://jekyllbootstrap.com/">Jekyll Bootstrap</a></small></p>
+      </footer>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+  </body>
+</html>
+

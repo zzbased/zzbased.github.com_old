@@ -1,0 +1,190 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="author" content="vincentyao" />
+    <title>Git与bitbucket配置</title>
+
+    <link rel="stylesheet" href="/assets/themes/dinky/css/styles.css">
+    <link rel="stylesheet" href="/assets/themes/dinky/css/pygment_trac.css">
+    <script src="/assets/themes/dinky/js/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header"><a href="/">100的技术博客</a></h1>
+        <p class="header">广告、算法与金融</p>
+        <ul>
+          
+          
+          
+
+
+  
+    
+      
+      	
+      	<li><a href="/archive.html">Archive</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories.html">Categories</a></li>
+      	
+      
+    
+  
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/pages.html">Pages</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags.html">Tags</a></li>
+      	
+      
+    
+  
+
+
+
+        </ul>
+        
+        
+        <div class="misc vcard">
+          <h4>about</h4>
+          <ul>
+            
+            <li class="contact"><address><span class="author fn n">vincentyao</span> - <span class="fn email">zerobased@foxmail.com</span></address></li>
+            
+            
+            <li class="github"><a href="http://github.com/zzbased/" rel="me">github.com/zzbased</a></li>
+            
+            
+            <li class="twitter"><a href="http://weibo.com/zerobased/" rel="me">weibo.com/zerobased</a></li>
+            
+            
+            <li class="twitter"><a href="http://twitter.com/callyling/" rel="me">twitter.com/callyling</a></li>
+            
+            
+            
+            
+            
+          </ul>
+        </div><!-- misc -->
+        
+      </header>
+
+      <section>
+        
+<section>
+  <h1>Git与bitbucket配置</h1>
+
+  
+<h2 id="git--bitbucket-">Git + Bitbucket 配置</h2>
+
+<p>bitbuckte 相比于时下最流行的 github, 其最牛之处在于可以免费创建私人项目。这点相当吸引人。我打算把一些杂乱的项目放上去，一方面为个备份，另一方面也为跟踪开发过程。</p>
+
+<h3 id="mac-">Mac 配置</h3>
+
+<p>mac电脑上默认有安装git, 需要做的只是一些简单的配置。</p>
+
+<ol>
+  <li>首先申请一个bitbucket账号。创建一个repository。</li>
+  <li>接着参考<a href="https://confluence.atlassian.com/display/BITBUCKET/Set+up+SSH+for+Git">这篇文章</a></li>
+  <li>ssh-keygen 生成rsa的私钥和公钥。</li>
+  <li>创建ssh config.
+vi ~/.ssh/config。在里面输入下面内容：
+Host bitbucket.org
+ IdentityFile ~/.ssh/id_rsa</li>
+  <li>然后把public key设置到bitbucket里。
+ 设置成功后，执行“ssh -T git@bitbucket.org”测试是否OK。</li>
+  <li>
+    <p>根据bitbucket的提示，在本地command shell里输入：
+mkdir /path/to/your/project
+cd /path/to/your/project
+git init
+git remote add origin ssh://git@bitbucket.org/zzbased/medcare.git
+echo “# This is my README” » README.md
+git add README.md
+git commit -m “First commit. Adding a README.”
+git push -u origin master</p>
+  </li>
+  <li>over!</li>
+</ol>
+
+<h3 id="windows7-">Windows7 配置</h3>
+
+<ol>
+  <li>
+    <p>安装<a href="http://code.google.com/p/msysgit/">msysgit</a>。它包括一个git gui和一个git bash。</p>
+  </li>
+  <li>
+    <p>参考<a href="http://guganeshan.com/blog/setting-up-git-and-tortoisegit-with-bitbucket-step-by-step.html">这篇文章</a>设置ssh key。
+经过mac和windows7两个设置后，我的bitbucket ssh key是这样的：</p>
+
+    <p><img src="https://raw.githubusercontent.com/zzbased/zzbased.github.com/master/_posts/images/bitbucket_ssh.png" alt="bitbucket_ssh.png" /></p>
+  </li>
+  <li>
+    <p>选定一个目录，在该目录下右键打开git bash。直接git clone bitbucket上创建的repository。</p>
+  </li>
+  <li>
+    <p>更新代码后，右键git add all files now(or in git bash, execute ‘git add -u .’)。利用git gui commit代码(当然用git bash也可以，用git gui是方便查看diff)。最后在git bash里git push -u origin master代码即可。</p>
+  </li>
+</ol>
+
+<p>OK，以后我的私人工程代码都将用bitbucket来管理。</p>
+
+
+  
+</section>
+
+
+      </section>
+
+      <footer>
+        <p><small>Hosted on <a href="http://pages.github.com/">GitHub Pages</a> using the <a href="https://github.com/sodabrew/theme-dinky">Dinky theme</a> for <a href="http://jekyllbootstrap.com/">Jekyll Bootstrap</a></small></p>
+      </footer>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+  </body>
+</html>
+

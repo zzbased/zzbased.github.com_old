@@ -1,0 +1,308 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="author" content="vincentyao" />
+    <title>Git相关操作指南</title>
+
+    <link rel="stylesheet" href="/assets/themes/dinky/css/styles.css">
+    <link rel="stylesheet" href="/assets/themes/dinky/css/pygment_trac.css">
+    <script src="/assets/themes/dinky/js/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header"><a href="/">100的技术博客</a></h1>
+        <p class="header">广告、算法与金融</p>
+        <ul>
+          
+          
+          
+
+
+  
+    
+      
+      	
+      	<li><a href="/archive.html">Archive</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories.html">Categories</a></li>
+      	
+      
+    
+  
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/pages.html">Pages</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags.html">Tags</a></li>
+      	
+      
+    
+  
+
+
+
+        </ul>
+        
+        
+        <div class="misc vcard">
+          <h4>about</h4>
+          <ul>
+            
+            <li class="contact"><address><span class="author fn n">vincentyao</span> - <span class="fn email">zerobased@foxmail.com</span></address></li>
+            
+            
+            <li class="github"><a href="http://github.com/zzbased/" rel="me">github.com/zzbased</a></li>
+            
+            
+            <li class="twitter"><a href="http://weibo.com/zerobased/" rel="me">weibo.com/zerobased</a></li>
+            
+            
+            <li class="twitter"><a href="http://twitter.com/callyling/" rel="me">twitter.com/callyling</a></li>
+            
+            
+            
+            
+            
+          </ul>
+        </div><!-- misc -->
+        
+      </header>
+
+      <section>
+        
+<section>
+  <h1>Git相关操作指南</h1>
+
+  
+<h2 id="git">git相关操作指南</h2>
+
+<h3 id="git-1">最基础的git操作</h3>
+<ul>
+  <li>创建新仓库。</li>
+</ul>
+
+<blockquote>
+  <p>创建新文件夹，打开，然后执行 git init 以创建新的 git 仓库。</p>
+</blockquote>
+
+<ul>
+  <li>检出仓库。</li>
+</ul>
+
+<blockquote>
+  <p>执行如下命令以创建一个本地仓库的克隆版本：
+git clone /path/to/repository
+如果是远端服务器上的仓库，你的命令会是这个样子：
+git clone username@host:/path/to/repository</p>
+</blockquote>
+
+<ul>
+  <li>工作流。</li>
+</ul>
+
+<blockquote>
+  <p>你的本地仓库由 git 维护的三棵“树”组成。第一个是你的 工作目录，它持有实际文件；第二个是 缓存区（Index），它像个缓存区域，临时保存你的改动；最后是 HEAD，指向你最近一次提交后的结果。</p>
+</blockquote>
+
+<ul>
+  <li>添加与提交。</li>
+</ul>
+
+<blockquote>
+  <p>你可以计划改动（把它们添加到缓存区），使用如下命令：
+git add <filename>
+git add *
+这是 git 基本工作流程的第一步；使用如下命令以实际提交改动：
+git commit -m "代码提交信息"
+现在，你的改动已经提交到了 HEAD，但是还没到你的远端仓库。</filename></p>
+</blockquote>
+
+<ul>
+  <li>推送改动。</li>
+</ul>
+
+<blockquote>
+  <p>你的改动现在已经在本地仓库的 HEAD 中了。执行如下命令以将这些改动提交到远端仓库：
+git push origin master
+可以把 master 换成你想要推送的任何分支。
+如果你还没有克隆现有仓库，并欲将你的仓库连接到某个远程服务器，你可以使用如下命令添加：
+git remote add origin <server>
+如此你就能够将你的改动推送到所添加的服务器上去了。</server></p>
+</blockquote>
+
+<ul>
+  <li>更新与合并。</li>
+</ul>
+
+<blockquote>
+  <p>要更新你的本地仓库至最新改动，执行：
+git pull
+以在你的工作目录中 获取（fetch） 并 合并（merge） 远端的改动。
+要合并其他分支到你的当前分支（例如 master），执行：
+git merge <branch>
+两种情况下，git 都会尝试去自动合并改动。不幸的是，自动合并并非次次都能成功，并可能导致 冲突（conflicts）。 这时候就需要你修改这些文件来人肉合并这些 冲突（conflicts） 了。改完之后，你需要执行如下命令以将它们标记为合并成功：
+git add <filename>
+在合并改动之前，也可以使用如下命令查看：
+git diff <source_branch> <target_branch></target_branch></source_branch></filename></branch></p>
+</blockquote>
+
+<ul>
+  <li>替换本地改动。</li>
+</ul>
+
+<blockquote>
+  <p>假如你做错事（自然，这是不可能的），你可以使用如下命令替换掉本地改动：
+git checkout – <filename>
+此命令会使用 HEAD 中的最新内容替换掉你的工作目录中的文件。已添加到缓存区的改动，以及新文件，都不受影响。
+假如你想要丢弃你所有的本地改动与提交，可以到服务器上获取最新的版本并将你本地主分支指向到它：
+git fetch origin
+git reset --hard origin/master</filename></p>
+</blockquote>
+
+<ul>
+  <li>git与svn命令的区别。更多请参考<a href="http://www.uml.org.cn/pzgl/201211265.asp">Subversion 用户眼中的 Git</a></li>
+</ul>
+
+<blockquote>
+  <p>git pull – svn up；
+git add – svn add；
+git commit – svn ci；
+git clone – svn cp；
+git checkout – svn co；
+git push – 无；
+git status – svn status；
+git revert – svn revert；
+git diff –  svn diff；
+git merge – svn merge；</p>
+</blockquote>
+
+<h3 id="git-">git 客户端</h3>
+<p>常见的git客户端有：<a href="https://msysgit.github.io/">msysgit</a>，<a href="https://code.google.com/p/tortoisegit/">TortoiseGit</a></p>
+
+<p>我常用的是msysgit。它自带一个git gui。下图中，缓存改动的命令为git add，提交的命令为git commit，上传的命令为git push。</p>
+
+<p><img src="https://raw.githubusercontent.com/zzbased/zzbased.github.com/master/_posts/images/git_gui.png" alt="git_gui" /></p>
+
+<p>在公司里用git，可能需要设置git proxy，命令如下面所示：
+git config –global http.proxy https://web-proxyhk.oa.com:8080</p>
+
+<p>git gui默认不保存用户名和密码，如果需要让它保存，可以设置credential.helper，
+git config –global credential.helper “cache –timeout=3600”。具体请参考<a href="http://stackoverflow.com/questions/5343068/is-there-a-way-to-skip-password-typing-when-using-https-github">skip-password</a></p>
+
+<h3 id="git-submodule">git submodule</h3>
+
+<p><a href="http://git-scm.com/book/zh/v1/Git-工具-子模块">Git 工具 - 子模块</a></p>
+
+<p>经常有这样的事情，当你在一个项目上工作时，你需要在其中使用另外一个项目。也许它是一个第三方开发的库或者是你独立开发和并在多个父项目中使用的。</p>
+
+<p>Git 通过子模块处理这个问题。子模块允许你将一个 Git 仓库当作另外一个Git仓库的子目录。这允许你克隆另外一个仓库到你的项目中并且保持你的提交相对独立。</p>
+
+<p>git submodule 就是 svn:externals 翻版</p>
+
+<p><strong>克隆一个带子模块的项目</strong>，当你接收到这样一个项目，你将得到了包含子项目的目录，但里面没有文件。
+此时应该先调用 git submodule update –init</p>
+
+<p>git submodule其他参考：</p>
+
+<ul>
+  <li><a href="http://www.kafeitu.me/git/2012/03/27/git-submodule.html">Git Submodule使用完整教程</a></li>
+  <li><a href="http://blog.devtang.com/blog/2013/05/08/git-submodule-issues/">Git Submodule的坑</a></li>
+</ul>
+
+<h3 id="git-2">Git回滚</h3>
+
+<p><a href="https://ruby-china.org/topics/11637">git 回退到某版本后,再在此版本上更新,无法push</a></p>
+
+<p>如果仅仅你自己在使用，那么强制push，命令是：git push -f
+如果是与人合作，更漂亮的做法是git revert</p>
+
+<p><a href="http://gitbook.liuhui998.com/4_9.html">Git的撤消操作 - 重置,签出和撤消</a></p>
+
+<p>修复未提交文件中的错误: git reset；
+修复已提交文件中的错误: git revert，再git push。</p>
+
+<p><a href="http://my.oschina.net/MinGKai/blog/144932">git revert 和reset的区别</a></p>
+
+<h3 id="repo-url">如何查看repo url</h3>
+
+<p>类似于svn info的功能。</p>
+
+<p>If referential integrity has been broken:
+git config –get remote.origin.url</p>
+
+<p>If referential integrity is intact:
+git remote show origin</p>
+
+<p>参考自<a href="http://stackoverflow.com/questions/4089430/how-can-i-determine-the-url-that-a-local-git-repo-was-originally-cloned-from">How can I determine the url that a local git repo was originally cloned from?</a></p>
+
+<h3 id="section">其他参考资料</h3>
+
+<ul>
+  <li><a href="http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000">完整的git教程</a></li>
+  <li><a href="http://www.bootcss.com/p/git-guide/">git使用简易指南</a></li>
+  <li><a href="http://gitref.org/zh/basic/#status">git参考手册</a></li>
+  <li><a href="http://www.letuknowit.com/post/144.html">Git冲突：commit your changes or stash them before you can merge. 解决办法</a></li>
+  <li><a href="http://blog.csdn.net/authorzhh/article/details/7533086">git与github的关联</a></li>
+</ul>
+
+
+
+  
+</section>
+
+
+      </section>
+
+      <footer>
+        <p><small>Hosted on <a href="http://pages.github.com/">GitHub Pages</a> using the <a href="https://github.com/sodabrew/theme-dinky">Dinky theme</a> for <a href="http://jekyllbootstrap.com/">Jekyll Bootstrap</a></small></p>
+      </footer>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+  </body>
+</html>
+
